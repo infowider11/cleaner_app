@@ -125,11 +125,20 @@ class WorkCard extends StatelessWidget {
                                             height: 8,
                                             width: 9,
                                           ),
+
+                                          if(isMaintenance != true)
                                           ParagraphText(
                                             '${ListData['apartment']['images'].length ?? "0"}',
                                             color: Colors.white,
                                             fontSize: 10,
-                                          )
+                                          ),
+
+                                          if(isMaintenance == true)
+                                            ParagraphText(
+                                              '${ListData['images'].length ?? "0"}',
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
                                         ],
                                       ),
                                     ),
@@ -995,8 +1004,8 @@ class _MaintenanceCradState extends State<MaintenanceCrad> {
                           'task_id' : widget.task_id,
                           'user_id' : userDataNotifier.value!.id ?? "",
                           'end_location' : widget.currentAddress,
-                          'start_date' : DateFormat("dd-MM-yyyy").format(dateStart),
-                          'end_date' : DateFormat("dd-MM-yyyy").format(dateEnd),
+                          'start_date' : DateFormat("yyyy-MM-dd").format(dateStart),
+                          'end_date' : DateFormat("yyyy-MM-dd").format(dateEnd),
                         };
 
                         setState(() {

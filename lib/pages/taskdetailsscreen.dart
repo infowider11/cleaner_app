@@ -327,7 +327,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                     icon:MyImages.flag ,
                     text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
                      fontSize: 10,
-                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
+                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
                      height: 24,
                      verticalMargin:5,
                      verticalPadding: 0,
@@ -703,7 +703,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                     icon:MyImages.flag ,
                     text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
                      fontSize: 10,
-                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
+                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
                      height: 24,
                      verticalMargin:5,
                      verticalPadding: 0,
@@ -792,7 +792,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                       children: [
                         Icon(Icons.calendar_month,color: Color(0xffB49877),size:12,),
                         hSizedBox05,
-                        ParagraphText('Started on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(taskDetail!['date']))}  ${taskDetail!['time']}',color: Colors.black,fontSize: 12,),
+                        ParagraphText('Assigned on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(taskDetail!['date']))}  ${taskDetail!['time']}',color: Colors.black,fontSize: 12,),
                       ],
                     ),
                   ],
@@ -1020,7 +1020,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
           maintenanceTaskDetail?['images'].length != 0 ?
           CarouselSlider(
             options: CarouselOptions(
-                height: 270,
+                height: 170,
                 viewportFraction: 1,
                 enableInfiniteScroll: false,
                 onPageChanged: (index, reason) {
@@ -1040,7 +1040,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                         itemBuilder: (context, index) {
                           return  CachedNetworkImage(
                             fit: BoxFit.cover,
-                            height: 270,
+                            height: 170,
                             width: MediaQuery.of(context).size.width,
                             placeholder: (context, url) =>
                             const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
@@ -1052,7 +1052,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
           ):
           Container(
             alignment: Alignment.center,
-            height: 270,
+            height: 170,
             width: double.infinity,
             child: ParagraphText("No Image", color: Colors.black,),
           ),
@@ -1105,7 +1105,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                     children: [
                       Icon(Icons.calendar_month,color: Color(0xffB49877),size:12,),
                       hSizedBox05,
-                      ParagraphText('Started on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(maintenanceTaskDetail!['date']))}  ${maintenanceTaskDetail!['time']}',color: Colors.black,fontSize: 12,),
+                      ParagraphText('Assigned on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(maintenanceTaskDetail!['date']))}  ${maintenanceTaskDetail!['time']}',color: Colors.black,fontSize: 12,),
                     ],
                   ),
                 ],
@@ -1122,6 +1122,57 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                 Icon(Icons.work, size: 12, color: Color(0xffB49877),),
                 hSizedBox05,
                 ParagraphText('${maintenanceTaskDetail!['title']}',color: Colors.black,fontSize: 12,),
+              ],
+            ),
+          ),
+          vSizedBox05,
+
+          if(maintenanceTaskDetail?['started_by'] != null && maintenanceTaskDetail?['started_by']['id'] != userDataNotifier.value?.id)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.person, size: 12, color: Color(0xffB49877),),
+                    hSizedBox05,
+                    ParagraphText('Started by ${maintenanceTaskDetail?['started_by']['name']}',color: Colors.black,fontSize: 12,),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.timelapse, size: 12, color: Color(0xffB49877),),
+                    hSizedBox05,
+                    ParagraphText('Started on ${(maintenanceTaskDetail?['start_date'])}',color: Colors.black,fontSize: 12,),
+                  ],
+                ),
+
+                if(maintenanceTaskDetail?['status'].toString() == '1')
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(Icons.person, size: 12, color: Color(0xffB49877),),
+                        hSizedBox05,
+                        ParagraphText('Completed by ${maintenanceTaskDetail?['started_by']['name']}',color: Colors.black,fontSize: 12,),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(Icons.timelapse, size: 12, color: Color(0xffB49877),),
+                        hSizedBox05,
+                        ParagraphText('Completed at ${maintenanceTaskDetail?['end_date']}',color: Colors.black,fontSize: 12,),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -1203,7 +1254,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
       ///for maintenance
       maintenanceTaskDetail?['status'] != null && userDataNotifier.value?.userType == UserType.Maintenance ? Padding(
         padding: const EdgeInsets.all(8.0),
-        child:  maintenanceTaskDetail?['status'].toString() == '0' ?
+        child:
+        maintenanceTaskDetail?['started_by'] != null && maintenanceTaskDetail?['started_by']['id'] != userDataNotifier.value?.id ? Container(height: 0,) :
+        maintenanceTaskDetail?['status'].toString() == '0' ?
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: RoundEdgedButton(text: 'START',isLoad: load3, loaderColor: MyColors.whiteColor, height:49,verticalPadding: 0,
@@ -1353,9 +1406,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                  if(taskDetail?['supervisior_task_status'].toString() == '1') {
                    toast('You have already supervised this task.');
                  }
-                 else if( taskDetail?['status'].toString() == '0' || taskDetail!['status'].toString() == '2' ){
-                   toast('This task has not been completed yet.');
-                 }
+                 // else if( taskDetail?['status'].toString() == '0' || taskDetail!['status'].toString() == '2' ){
+                 //   toast('This task has not been completed yet.');
+                 // }
                  else if(taskDetail?['supervisior_task_status'].toString() == '0'){
                    {
 

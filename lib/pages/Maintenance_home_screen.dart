@@ -239,47 +239,50 @@ class Maintenance_home_screenState extends State<Maintenance_home_screen> {
                 },
               ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if(maintenance_task_list_data.length == 0)
-                    ParagraphText('No Task For ${selectedVal??"Today"}',fontSize: 12,)
-                  else
-                    ParagraphText('${maintenance_task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
-
-
-                    RoundEdgedButton(
-                      text: 'All Cleaner List',
-                      fontSize: 11,
-                      width: 110,
-                      height: 27,
-                      borderRadius: 8,
-                      color: MyColors.primaryColor,
-                      fontWeight: FontWeight.w700,
-                      onTap: () async{
-                        cleanerListApi();
-                      },
-                    ),
-
-
-                    if(day7!=null)
-                      DropDown(
-                        items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
-                        label: 'Select Date',
-                        selectedValue: selectedVal,
-                        width: 120,
-                        onChange: (val) async{
-                          setState(() {
-
-                            selectedVal = val;
-                            formatted_date = selectedVal!;
-                          });
-                          ///calling api here
-                          maintenance_taskList();
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if(maintenance_task_list_data.length == 0)
+                      ParagraphText('No Task For ${selectedVal??"Today"}',fontSize: 12,)
+                    else
+                      ParagraphText('${maintenance_task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
+              
+              
+                      RoundEdgedButton(
+                        text: 'All Cleaner List',
+                        fontSize: 11,
+                        width: 110,
+                        height: 27,
+                        borderRadius: 8,
+                        color: MyColors.primaryColor,
+                        fontWeight: FontWeight.w700,
+                        onTap: () async{
+                          cleanerListApi();
                         },
                       ),
-
-                ],
+              
+              
+                      if(day7!=null)
+                        DropDown(
+                          items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
+                          label: 'Select Date',
+                          selectedValue: selectedVal,
+                          width: 120,
+                          onChange: (val) async{
+                            setState(() {
+              
+                              selectedVal = val;
+                              formatted_date = selectedVal!;
+                            });
+                            ///calling api here
+                            maintenance_taskList();
+                          },
+                        ),
+              
+                  ],
+                ),
               ),
 
               if(isCleaner_task != true)

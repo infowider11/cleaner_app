@@ -28,5 +28,25 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>LSApplicationCategoryType</key>
+    	<string></string>
+    	<key>LSRequiresIPhoneOS</key>
+    	<true/>
+    	<key>NSCameraUsageDescription</key>
+    	<string>Camera is required to connect with people on call</string>
+    	<key>NSLocationAlwaysAndWhenInUsageDescription</key>
+    	<string>Always and in usage permissions</string>
+    	<key>NSLocationAlwaysUsageDescription</key>
+    	<string>always permissions</string>
+    	<key>NSLocationWhenInUseUsageDescription</key>
+    	<string>When in use permissions</string>
+    	<key>NSMicrophoneUsageDescription</key>
+    	<string>Microphone is required to connect with people on call</string>
+    	<key>NSPhotoLibraryAddUsageDescription</key>
+    	<string>Photo required</string>
+    	<key>NSPhotoLibraryUsageDescription</key>
+    	<string>Photo library is required to upload photos to library</string>
+    	<key>UIApplicationSupportsIndirectInputEvents</key>
+    	<true/>
 </dict>
 </plist>

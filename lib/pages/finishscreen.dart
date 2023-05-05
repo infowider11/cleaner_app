@@ -292,7 +292,7 @@ class _FinishScreenState extends State<FinishScreen> {
                     icon:MyImages.flag ,
                     text: widget.taskDetail!['is_report'].toString() == '0' ?  'REPORT MAINTENANCE' : 'REPORTED',
                     fontSize: 10,
-                    width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
+                    width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.24,
                     height: 24,
                     verticalMargin:5,
                     verticalPadding: 0,
@@ -554,78 +554,80 @@ class _FinishScreenState extends State<FinishScreen> {
                       return StatefulBuilder(
                           builder: (BuildContext context, StateSetter dabbeKaSetState) {
 
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ///select image
-                                vSizedBox4,
-                                GestureDetector(
-                                  onTap: ()async{
-                                    await _image_camera_dialog(context);
-
-                                    dabbeKaSetState((){});
-                                  },
-                                  child:
-                                  selectedimage!=null?
-                                  ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child:
-                                      Image.file(File(selectedimage!.path,),  fit: BoxFit.cover,height: 162,width: 162,)):
-                                  Container(
-                                      height:162,width: 162,
-                                      decoration: BoxDecoration(
-                                          color: Color(0xffDBDBDB),
-                                          borderRadius: BorderRadius.circular(10)
-                                      ),
-                                      child:
-
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Image.asset(MyImages.uploadreport,height:52,width:52,),
-                                          ParagraphText('UPLOAD IMAGE',fontSize: 15,)
-
-                                        ],
-                                      )
+                            return SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ///select image
+                                  vSizedBox4,
+                                  GestureDetector(
+                                    onTap: ()async{
+                                      await _image_camera_dialog(context);
+                            
+                                      dabbeKaSetState((){});
+                                    },
+                                    child:
+                                    selectedimage!=null?
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child:
+                                        Image.file(File(selectedimage!.path,),  fit: BoxFit.cover,height: 162,width: 162,)):
+                                    Container(
+                                        height:162,width: 162,
+                                        decoration: BoxDecoration(
+                                            color: Color(0xffDBDBDB),
+                                            borderRadius: BorderRadius.circular(10)
+                                        ),
+                                        child:
+                            
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(MyImages.uploadreport,height:52,width:52,),
+                                            ParagraphText('UPLOAD IMAGE',fontSize: 15,)
+                            
+                                          ],
+                                        )
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:40),
-                                  child: CustomTextField
-                                    (controller: titleController, hintText: 'TITLE',bgColor:Colors.white,borderRadius: 0,verticalPadding:0,maxLines:1,
-                                    height: size_height*0.05,
-                                  ),
-                                ) ,
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:40),
-                                  child: CustomTextField(controller: location1, enabled: false, hintText: 'LOCATION',bgColor:Colors.white,borderRadius: 0,maxLines: 5, contentPadding: 10,),
-                                ) ,
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal:40),
-                                  child: RoundEdgedButton(
-                                    text: 'Save', color: MyColors.primaryColor, borderRadius: 10,onTap: (){
-
-                                    if(titleController.text != "" && location1.text != "" && selectedimage!=null){
-
-                                      Map temp = {
-                                          'title': titleController.text,
-                                          'address': location1.text,
-                                          'image': selectedimage,
-                                        };
-
-                                      data.add(temp);
-
-                                      Navigator.pop(context);
-
-                                      this.setState(() {});
-                                    }else{
-                                      toast('Please enter all fields.');
-                                    }
-                                  },),
-                                )
-
-                              ],
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal:40),
+                                    child: CustomTextField
+                                      (controller: titleController, hintText: 'TITLE',bgColor:Colors.white,borderRadius: 0,verticalPadding:0,maxLines:1,
+                                      height: size_height*0.05,
+                                    ),
+                                  ) ,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal:40),
+                                    child: CustomTextField(controller: location1, enabled: false, hintText: 'LOCATION',bgColor:Colors.white,borderRadius: 0,maxLines: 5, contentPadding: 10,),
+                                  ) ,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal:40),
+                                    child: RoundEdgedButton(
+                                      text: 'Save', color: MyColors.primaryColor, borderRadius: 10,onTap: (){
+                            
+                                      if(titleController.text != "" && location1.text != "" && selectedimage!=null){
+                            
+                                        Map temp = {
+                                            'title': titleController.text,
+                                            'address': location1.text,
+                                            'image': selectedimage,
+                                          };
+                            
+                                        data.add(temp);
+                            
+                                        Navigator.pop(context);
+                            
+                                        this.setState(() {});
+                                      }else{
+                                        toast('Please enter all fields.');
+                                      }
+                                    },),
+                                  )
+                            
+                                ],
+                              ),
                             );
                           });
                     });
