@@ -107,7 +107,7 @@ class _LastInventoryScreenState extends State<LastInventoryScreen> with SingleTi
               child: GridView.builder
                 (gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent:200,
-                  childAspectRatio:0.88,
+                  childAspectRatio:0.92,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10),
                   itemCount:  widget.image?.length,

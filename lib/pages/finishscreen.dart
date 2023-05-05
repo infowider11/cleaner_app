@@ -292,7 +292,7 @@ class _FinishScreenState extends State<FinishScreen> {
                     icon:MyImages.flag ,
                     text: widget.taskDetail!['is_report'].toString() == '0' ?  'REPORT MAINTENANCE' : 'REPORTED',
                     fontSize: 10,
-                    width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.24,
+                    width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
                     height: 24,
                     verticalMargin:5,
                     verticalPadding: 0,
@@ -563,7 +563,7 @@ class _FinishScreenState extends State<FinishScreen> {
                                   GestureDetector(
                                     onTap: ()async{
                                       await _image_camera_dialog(context);
-                            
+
                                       dabbeKaSetState((){});
                                     },
                                     child:
@@ -579,14 +579,14 @@ class _FinishScreenState extends State<FinishScreen> {
                                             borderRadius: BorderRadius.circular(10)
                                         ),
                                         child:
-                            
+
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             Image.asset(MyImages.uploadreport,height:52,width:52,),
                                             ParagraphText('UPLOAD IMAGE',fontSize: 15,)
-                            
+
                                           ],
                                         )
                                     ),
@@ -606,26 +606,26 @@ class _FinishScreenState extends State<FinishScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal:40),
                                     child: RoundEdgedButton(
                                       text: 'Save', color: MyColors.primaryColor, borderRadius: 10,onTap: (){
-                            
+
                                       if(titleController.text != "" && location1.text != "" && selectedimage!=null){
-                            
+
                                         Map temp = {
                                             'title': titleController.text,
                                             'address': location1.text,
                                             'image': selectedimage,
                                           };
-                            
+
                                         data.add(temp);
-                            
+
                                         Navigator.pop(context);
-                            
+
                                         this.setState(() {});
                                       }else{
                                         toast('Please enter all fields.');
                                       }
                                     },),
                                   )
-                            
+
                                 ],
                               ),
                             );

@@ -44,7 +44,10 @@ class WorkCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
             boxShadow: [shadow],
-            color: Colors.white,
+            color:
+            ListData['color_status'].toString() == "1" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false)? MyColors.arrivalColor :
+            ListData['color_status'].toString() == "2" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false) ? MyColors.inHouseColor :
+            MyColors.whiteColor,
             borderRadius: BorderRadius.circular(8)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

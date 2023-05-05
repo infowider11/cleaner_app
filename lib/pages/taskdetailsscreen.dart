@@ -376,13 +376,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             vSizedBox,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                  hSizedBox05,
-                  ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+              child: SizedBox(
+                width: size_width/1.1,
+                child: Wrap(
+                  children: [
+                    Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                    hSizedBox05,
+                    ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
 
-                ],
+                  ],
+                ),
               ),
             ),
             vSizedBox05,
@@ -454,20 +457,42 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                 ],
               ),
             ),
-            vSizedBox05,
-            if(userDataNotifier.value?.userType != UserType.Maintenance ||  taskDetail?['supervisior']!=null || widget.isCleaner_task==true)
+
+              vSizedBox05,
+
+
+            if(userDataNotifier.value?.userType != UserType.Maintenance || widget.isCleaner_task==true)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
+                  if(taskDetail?['supervisior']!=null)
                   Icon(Icons.person,color: Color(0xffB49877),size:12,),
                   hSizedBox05,
+                  if(taskDetail?['supervisior']!=null)
                   ParagraphText('${taskDetail!['supervisior']['name']} (Supervisor)',color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
 
                 ],
               ),
             ),
+            if(taskDetail!['color_status'].toString() != "0")
+              vSizedBox05,
 
+            if(userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics )
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    taskDetail!['color_status'].toString() == "0" ? Container(height: 0,):
+                    Icon(Icons.circle,color: Color(0xffB49877),size:12,),
+                    hSizedBox05,
+                    ParagraphText(taskDetail!['color_status'].toString() == "1" ? "Arrival" :
+                    taskDetail!['color_status'].toString() == "2" ? "In House" : "" ,color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
+
+                  ],
+                ),
+              ),
+            if(taskDetail!['color_status'].toString() != "0")
             vSizedBox05,
             Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -688,13 +713,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                         child: ParagraphText("No Image", color: Colors.black,),
                      ),
 
-                    // :
-                // Container(
-                //   alignment: Alignment.center,
-                //   height: 170,
-                //   width: double.infinity,
-                //   child: Text("No Image"),
-                // ),
+
 
                 if(userDataNotifier.value?.userType != UserType.Logistics)
                 Positioned(
@@ -752,13 +771,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             vSizedBox,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Row(
-                children: [
-                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                  hSizedBox05,
-                  ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+              child: SizedBox(
+                width: size_width/1.1,
+                child: Wrap(
+                  children: [
+                    Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                    hSizedBox05,
+                    ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
 
-                ],
+                  ],
+                ),
               ),
             ),
             vSizedBox05,
@@ -830,7 +852,25 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                 ],
               ),
             ),
+            if(taskDetail!['color_status'].toString() != "0")
             vSizedBox05,
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  taskDetail!['color_status'].toString() == "0" ? SizedBox(height: 0,):
+                  Icon(Icons.circle,color: Color(0xffB49877),size:12,),
+                  hSizedBox05,
+                  ParagraphText(taskDetail!['color_status'].toString() == "1" ? "Arrival" :
+                  taskDetail!['color_status'].toString() == "2" ? "In House" : "" ,color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
+
+                ],
+              ),
+            ),
+            if(taskDetail!['color_status'].toString() != "0")
+              vSizedBox05,
+
             if(userDataNotifier.value?.userType != UserType.Maintenance &&  taskDetail?['supervisior']!=null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -1071,13 +1111,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
           vSizedBox,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              children: [
-                Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                hSizedBox05,
-                ParagraphText('${maintenanceTaskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+            child: SizedBox(
+              width: size_width/1.1,
+              child: Wrap(
+                children: [
+                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                  hSizedBox05,
+                  ParagraphText('${maintenanceTaskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
 
-              ],
+                ],
+              ),
             ),
           ),
           vSizedBox05,
@@ -1126,6 +1169,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             ),
           ),
           vSizedBox05,
+
+
 
           if(maintenanceTaskDetail?['started_by'] != null && maintenanceTaskDetail?['started_by']['id'] != userDataNotifier.value?.id)
           Padding(

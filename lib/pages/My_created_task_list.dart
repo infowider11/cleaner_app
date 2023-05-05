@@ -221,153 +221,151 @@ class _My_created_task_listState extends State<My_created_task_list> {
                           child: Container(
                             width: MediaQuery.of(context).size.width / 1.1,
 
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                            
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ///heading
-                                      Text("Add Task",
-                                        style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: InkWell(
-                                            onTap: ()=> Navigator.pop(context),
-                                            child: Icon(CupertinoIcons.multiply)),
-                                      ),
-                                    ],
-                                  ),
-                                  Divider(),
-                            
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                            
-                            
-                                  CustomDropdownButton(
-                                    text: 'Apartment',
-                                    items: (apt_priority_data?['apartment_list'] as List<dynamic>),
-                                    selectedItem: selected_apt,
-                                    hint: 'Select Apartment',
-                                    onChanged: (value){
-                                      selected_apt = value! ;
-                                      print('selected_apt${selected_apt?['id']}');
-                                    },
-                                  ),
-                            
-                            
-                                  // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  Text("Date",
-                                    style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
-                                  ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  CustomTextField(
-                                    controller: datepicker,
-                                    hintText: 'Pick Date',
-                                    enabled: isEnable,
-                                    borderRadius: 5,
-                                    bgColor: Colors.white,
-                                    suffix2: GestureDetector(
-                                        onTap: (){
-                                          pick_date1();
-                                        },
-                                        child: Icon(Icons.calendar_month)),
-                                  ),
-                            
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  Text("Time",
-                                    style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
-                                  ),
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  CustomTextField(
-                                    controller: timepicker,
-                                    hintText: 'Pick Time',
-                                    enabled: isEnable,
-                                    borderRadius: 5,
-                                    bgColor: Colors.white,
-                                    suffix2: GestureDetector(
-                                        onTap: (){
-                                          _selectTime();
-                                        },
-                                        child: Icon(Icons.access_time)),
-                                  ),
-                            
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  CustomDropdownButton(
-                                    text: 'Work Priority',
-                                    items: (apt_priority_data?['priority_list'] as List<dynamic>),
-                                    selectedItem: selected_priority,
-                                    itemMapKey: 'title',
-                                    hint: 'Select Work Priority',
-                                    onChanged: (value){
-                                      selected_priority = value! ;
-                                      print('selected_apt${selected_priority?['id']}');
-                                    },
-                                  ),
-                            
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  CustomDropdownButton(
-                                    text: 'Staff',
-                                    items: (cleaner_list as List<dynamic>),
-                                    selectedItem: selected_cleaner,
-                                    hint: 'Select Staff Name',
-                                    onChanged: (value){
-                                      selected_cleaner = value! ;
-                                      print('cleaner_list${selected_cleaner?['id']}');
-                                    },
-                                  ),
-                            
-                                  // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                                  RoundEdgedButton(
-                                    text: 'Add Task',
-                                    color: MyColors.primaryColor,
-                                    isLoad: loadAddTask,
-                                    loaderColor: MyColors.whiteColor,
-                                    borderRadius: 10,
-                                    onTap: () async{
-                                      ///supervisor add task validation & api integration
-                                      dialog_setState(() {loadAddTask = true;});
-                            
-                                      if(selected_apt?['id'].toString() == '' || datepicker.text == '' || timepicker.text == '' ||
-                                          selected_cleaner?['id'].toString() == '' || selected_priority?['id'].toString() == ''){
-                                        toast('All fields are required.');
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ///heading
+                                    Text("Add Task",
+                                      style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: InkWell(
+                                          onTap: ()=> Navigator.pop(context),
+                                          child: Icon(CupertinoIcons.multiply)),
+                                    ),
+                                  ],
+                                ),
+                                Divider(),
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+
+
+                                CustomDropdownButton(
+                                  text: 'Apartment',
+                                  items: (apt_priority_data?['apartment_list'] as List<dynamic>),
+                                  selectedItem: selected_apt,
+                                  hint: 'Select Apartment',
+                                  onChanged: (value){
+                                    selected_apt = value! ;
+                                    print('selected_apt${selected_apt?['id']}');
+                                  },
+                                ),
+
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                Text("Date",
+                                  style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                CustomTextField(
+                                  controller: datepicker,
+                                  hintText: 'Pick Date',
+                                  enabled: isEnable,
+                                  borderRadius: 5,
+                                  bgColor: Colors.white,
+                                  suffix2: GestureDetector(
+                                      onTap: (){
+                                        pick_date1();
+                                      },
+                                      child: Icon(Icons.calendar_month)),
+                                ),
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                Text("Time",
+                                  style: TextStyle(letterSpacing: 0.3, height: 1.5,fontSize: 18, color: MyColors.blackColor, fontFamily: "trans_regular ", fontWeight: FontWeight.w400),
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                CustomTextField(
+                                  controller: timepicker,
+                                  hintText: 'Pick Time',
+                                  enabled: isEnable,
+                                  borderRadius: 5,
+                                  bgColor: Colors.white,
+                                  suffix2: GestureDetector(
+                                      onTap: (){
+                                        _selectTime();
+                                      },
+                                      child: Icon(Icons.access_time)),
+                                ),
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                CustomDropdownButton(
+                                  text: 'Work Priority',
+                                  items: (apt_priority_data?['priority_list'] as List<dynamic>),
+                                  selectedItem: selected_priority,
+                                  itemMapKey: 'title',
+                                  hint: 'Select Work Priority',
+                                  onChanged: (value){
+                                    selected_priority = value! ;
+                                    print('selected_apt${selected_priority?['id']}');
+                                  },
+                                ),
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                CustomDropdownButton(
+                                  text: 'Staff',
+                                  items: (cleaner_list as List<dynamic>),
+                                  selectedItem: selected_cleaner,
+                                  hint: 'Select Staff Name',
+                                  onChanged: (value){
+                                    selected_cleaner = value! ;
+                                    print('cleaner_list${selected_cleaner?['id']}');
+                                  },
+                                ),
+
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                                RoundEdgedButton(
+                                  text: 'Add Task',
+                                  color: MyColors.primaryColor,
+                                  isLoad: loadAddTask,
+                                  loaderColor: MyColors.whiteColor,
+                                  borderRadius: 10,
+                                  onTap: () async{
+                                    ///supervisor add task validation & api integration
+                                    dialog_setState(() {loadAddTask = true;});
+
+                                    if(selected_apt?['id'].toString() == '' || datepicker.text == '' || timepicker.text == '' ||
+                                        selected_cleaner?['id'].toString() == '' || selected_priority?['id'].toString() == ''){
+                                      toast('All fields are required.');
+                                    }else{
+                                      Map<String, dynamic> request = {
+                                        'apartment_id' : selected_apt?['id'],
+                                        'date' : DateFormat("yyyy-MM-dd").format(selectedDate1),
+                                        'time' : timepicker.text,
+                                        'task_type' : '5', /// for cleaner always 5
+                                        'staff_id' : selected_cleaner?['id'],
+                                        'assinged_by' : userDataNotifier.value?.id,
+                                        'work_priority' : selected_priority?['id']
+                                      };
+
+
+                                      final Response = await Webservices.postData(apiUrl: ApiUrls.supervisor_add_task, request: request);
+
+                                      dialog_setState(() {loadAddTask = false;});
+
+                                      if(Response['status'].toString() == "1"){
+                                        Navigator.pop(context);
+
+                                        taskList();
+
+                                        toast('Task has been added successfully');
                                       }else{
-                                        Map<String, dynamic> request = {
-                                          'apartment_id' : selected_apt?['id'],
-                                          'date' : DateFormat("yyyy-MM-dd").format(selectedDate1),
-                                          'time' : timepicker.text,
-                                          'task_type' : '5', /// for cleaner always 5
-                                          'staff_id' : selected_cleaner?['id'],
-                                          'assinged_by' : userDataNotifier.value?.id,
-                                          'work_priority' : selected_priority?['id']
-                                        };
-                            
-                            
-                                        final Response = await Webservices.postData(apiUrl: ApiUrls.supervisor_add_task, request: request);
-                            
-                                        dialog_setState(() {loadAddTask = false;});
-                            
-                                        if(Response['status'].toString() == "1"){
-                                          Navigator.pop(context);
-                            
-                                          taskList();
-                            
-                                          toast('Task has been added successfully');
-                                        }else{
-                                          Navigator.pop(context);
-                                          toast(Response['message']);
-                                        }
+                                        Navigator.pop(context);
+                                        toast(Response['message']);
                                       }
-                                    },
-                                  ),
-                            
-                            
-                                ],
-                              ),
+                                    }
+                                  },
+                                ),
+
+
+                              ],
                             ),
                           ),
                         ),
@@ -402,7 +400,10 @@ class _My_created_task_listState extends State<My_created_task_list> {
               child: Container(
                 decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                  color: MyColors.whiteColor,
+                  color:
+                  task_list_data[index]['color_status'].toString() == "1" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance )? MyColors.arrivalColor :
+                  task_list_data[index]['color_status'].toString() == "2" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance ) ? MyColors.inHouseColor :
+                  MyColors.whiteColor,
                 ),
                 child:
 
@@ -523,7 +524,7 @@ class _My_created_task_listState extends State<My_created_task_list> {
                                     ),
                                     hSizedBox05,
                                     SizedBox(
-                                      width: size_width/2.1,
+                                      width: size_width/1.9,
                                       child: Wrap(
                                         children: [
                                           ParagraphText(

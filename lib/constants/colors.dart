@@ -4,6 +4,8 @@ class MyColors{
   // Color(0xfff02321),
   // Color(0xff781211),
   static const Color primaryColor = Color(0xff0F3750);
+  static const Color arrivalColor = Color(0xfff7f2b2);
+  static const Color inHouseColor = Color(0xffc2f7b2);
   static const Color scafoldcolor = Color(0xfff5f5f5);
   static const Color appBgColor = Color(0xff332f2e);
   static const Color lightGreyColor = Color(0xFFe8e9e9);
