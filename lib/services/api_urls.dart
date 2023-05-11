@@ -27,6 +27,7 @@ class ApiUrls {
   static const String interval_api = baseUrl + 'interval_api';
   static const String maintenance_task_list = baseUrl + 'maintenance_task_list';
   static const String maintenance_task_detail = baseUrl + 'maintenance_task_detail';
+  static const String admin_maintenance_task = baseUrl + 'admin_maintenance_task';
 
 
   static const String updateDeviceToken = baseUrl + '';

@@ -100,8 +100,10 @@ Drawer get_drawer(BuildContext context,){
                           if(userDataNotifier.value?.userType != UserType.Maintenance)
                           MyGlobalKeys.homeScreenKey.currentState!.taskList();
 
-                          if(userDataNotifier.value?.userType == UserType.Maintenance)
+                          if(userDataNotifier.value?.userType == UserType.Maintenance) {
                             MyGlobalKeys.maintenanceHomeKey.currentState!.maintenance_taskList();
+                            MyGlobalKeys.maintenanceHomeKey.currentState!.tabController.index=0;
+                          }
 
                         },
                         child: Row(

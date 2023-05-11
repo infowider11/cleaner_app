@@ -1057,7 +1057,17 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          maintenanceTaskDetail?['images'].length != 0 ?
+          if(maintenanceTaskDetail?['task_image'] != "")
+            CachedNetworkImage(
+                fit: BoxFit.cover,
+                height: 170,
+                width: MediaQuery.of(context).size.width,
+                placeholder: (context, url) =>
+                const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
+                imageUrl: maintenanceTaskDetail?['task_image']
+            ),
+
+          maintenanceTaskDetail?['images'].length != 0 && maintenanceTaskDetail?['task_image'] == ""?
           CarouselSlider(
             options: CarouselOptions(
                 height: 170,
@@ -1084,18 +1094,19 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                             width: MediaQuery.of(context).size.width,
                             placeholder: (context, url) =>
                             const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
-                            imageUrl: maintenanceTaskDetail!['images'][index]['image'],
+                            imageUrl: maintenanceTaskDetail!['images'][index]['image']
                           );
                         });});}).toList(),
 
 
           ):
-          Container(
+          maintenanceTaskDetail?['task_image'] == "" ?
+            Container(
             alignment: Alignment.center,
             height: 170,
             width: double.infinity,
             child: ParagraphText("No Image", color: Colors.black,),
-          ),
+          ): Container(),
 
           vSizedBox2,
           Padding(
@@ -1222,6 +1233,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             ),
           ),
           vSizedBox05,
+          if(maintenanceTaskDetail?['assinged_by']!= null)
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
@@ -1301,7 +1313,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
         padding: const EdgeInsets.all(8.0),
         child:
         maintenanceTaskDetail?['started_by'] != null && maintenanceTaskDetail?['started_by']['id'] != userDataNotifier.value?.id ? Container(height: 0,) :
-        maintenanceTaskDetail?['status'].toString() == '0' ?
+        maintenanceTaskDetail?['status'].toString() == '0' || maintenanceTaskDetail?['status'].toString() == '4' ?
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: RoundEdgedButton(text: 'START',isLoad: load3, loaderColor: MyColors.whiteColor, height:49,verticalPadding: 0,
@@ -1405,6 +1417,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                                               ),
                                         );
 
+                                        Navigator.pop(context);
                                         maintenance_task_detail();
                                         toast("Thank you ! Task has been finish successfully");
                                       },
