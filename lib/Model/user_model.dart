@@ -50,7 +50,7 @@ class User_data {
     userType = json['type']=="1"? UserType.Secratary : json['type']=="2"? UserType.Supervisor :  json['type']=="3"? UserType.Logistics :
                  json['type']=="4"? UserType.Maintenance : UserType.Cleaners ;
     profileImage = json['profile_image'] ?? "";
-    status = json['status'] ?? "";
+    status = json['status'].toString() ?? "";
   }
 
   Map<String, dynamic> toJson() {

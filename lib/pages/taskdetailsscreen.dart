@@ -325,16 +325,18 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                   right: 5,
                   child: RoundEdgedButton(
                     icon:MyImages.flag ,
-                    text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
+                    // text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
+                    text: 'REPORT MAINTENANCE' ,
                      fontSize: 10,
-                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
+                     // width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
+                     width:  size_width*0.39 ,
                      height: 24,
                      verticalMargin:5,
                      verticalPadding: 0,
                     borderRadius: 5,
                     onTap:() async{
 
-                      if(taskDetail!['is_report'].toString() == '0') {
+                      // if(taskDetail!['is_report'].toString() == '0') {
                       await showDialog(
                           context: context,
                           builder: (ctx) =>
@@ -352,9 +354,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
 
                          task_detail();
 
-                      }else{
-                        toast('This task already been reported');
-                      }
+                      // }else{
+                      //   toast('This task already been reported');
+                      // }
                     },
 
                   ),
@@ -376,16 +378,20 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             vSizedBox,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: SizedBox(
-                width: size_width/1.1,
-                child: Wrap(
-                  children: [
-                    Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                    hSizedBox05,
-                    ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                  hSizedBox05,
+                  Wrap(
+                    children: [
+                      SizedBox(
+                          width: size_width/1.1,
+                          child: ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,)),
+                    ],
+                  ),
 
-                  ],
-                ),
+                ],
               ),
             ),
             vSizedBox05,
@@ -487,7 +493,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                     Icon(Icons.circle,color: Color(0xffB49877),size:12,),
                     hSizedBox05,
                     ParagraphText(taskDetail!['color_status'].toString() == "1" ? "Arrival" :
-                    taskDetail!['color_status'].toString() == "2" ? "In House" : "" ,color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
+                    taskDetail!['color_status'].toString() == "2" ? "In House" :
+                    taskDetail!['color_status'].toString() == "3" ? "Vacia" : "Check Out",color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
 
                   ],
                 ),
@@ -720,16 +727,18 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                   right: 5,
                   child: RoundEdgedButton(
                     icon:MyImages.flag ,
-                    text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
+                    // text: taskDetail!['is_report'].toString() == '0' ? 'REPORT MAINTENANCE' : 'REPORTED',
+                    text:  'REPORT MAINTENANCE' ,
                      fontSize: 10,
-                     width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
+                    // width: taskDetail!['is_report'].toString() == '0' ? size_width*0.39 : size_width*0.24,
+                    width:  size_width*0.39 ,
                      height: 24,
                      verticalMargin:5,
                      verticalPadding: 0,
                     borderRadius: 5,
                     onTap:() async{
 
-                      if(taskDetail!['is_report'].toString() == '0') {
+                      // if(taskDetail!['is_report'].toString() == '0') {
                       await showDialog(
                           context: context,
                           builder: (ctx) =>
@@ -747,9 +756,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
 
                          task_detail();
 
-                      }else{
-                        toast('This task already been reported');
-                      }
+                      // }else{
+                      //   toast('This task already been reported');
+                      // }
                     },
 
                   ),
@@ -771,16 +780,20 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
             vSizedBox,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: SizedBox(
-                width: size_width/1.1,
-                child: Wrap(
-                  children: [
-                    Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                    hSizedBox05,
-                    ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                  hSizedBox05,
+                  Wrap(
+                    children: [
+                      SizedBox(
+                          width: size_width/1.1,
+                          child: ParagraphText('${taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,)),
+                    ],
+                  ),
 
-                  ],
-                ),
+                ],
               ),
             ),
             vSizedBox05,
@@ -863,7 +876,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                   Icon(Icons.circle,color: Color(0xffB49877),size:12,),
                   hSizedBox05,
                   ParagraphText(taskDetail!['color_status'].toString() == "1" ? "Arrival" :
-                  taskDetail!['color_status'].toString() == "2" ? "In House" : "" ,color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
+                  taskDetail!['color_status'].toString() == "2" ? "In House" :
+                  taskDetail!['color_status'].toString() == "3" ? "Vacia" : "Check Out",color: Colors.black,fontSize: 12,fontWeight:FontWeight.w600,),
 
                 ],
               ),
@@ -1122,16 +1136,20 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
           vSizedBox,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SizedBox(
-              width: size_width/1.1,
-              child: Wrap(
-                children: [
-                  Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
-                  hSizedBox05,
-                  ParagraphText('${maintenanceTaskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
+                hSizedBox05,
+                Wrap(
+                  children: [
+                    SizedBox(
+                        width: size_width/1.1,
+                        child: ParagraphText('${maintenanceTaskDetail?['apartment']['location']}',color: Colors.black,fontSize: 12,)),
+                  ],
+                ),
 
-                ],
-              ),
+              ],
             ),
           ),
           vSizedBox05,

@@ -403,6 +403,8 @@ class _My_created_task_listState extends State<My_created_task_list> {
                   color:
                   task_list_data[index]['color_status'].toString() == "1" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance )? MyColors.arrivalColor :
                   task_list_data[index]['color_status'].toString() == "2" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance ) ? MyColors.inHouseColor :
+                  task_list_data[index]['color_status'].toString() == "3" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance ) ? MyColors.black54Color.withOpacity(0.2) :
+                  task_list_data[index]['color_status'].toString() == "4" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance ) ? MyColors.checkOutColor.withOpacity(0.2) :
                   MyColors.whiteColor,
                 ),
                 child:

@@ -47,6 +47,8 @@ class WorkCard extends StatelessWidget {
             color:
             ListData['color_status'].toString() == "1" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false)? MyColors.arrivalColor :
             ListData['color_status'].toString() == "2" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false) ? MyColors.inHouseColor :
+            ListData['color_status'].toString() == "3" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false) ? MyColors.black54Color.withOpacity(0.2) :
+            ListData['color_status'].toString() == "4" && (userDataNotifier.value?.userType == UserType.Supervisor || userDataNotifier.value?.userType == UserType.Logistics || userDataNotifier.value?.userType == UserType.Maintenance || isMaintenance == false) ? MyColors.checkOutColor.withOpacity(0.2) :
             MyColors.whiteColor,
             borderRadius: BorderRadius.circular(8)),
         child: Column(
@@ -236,6 +238,7 @@ class WorkCard extends StatelessWidget {
                                               width: 12,
                                             ),
                                             hSizedBox05,
+                                            // if(ListData['apartment_type'] != [])
                                             ParagraphText(
                                               '${ListData['apartment_type']['name']}',
                                               color: Colors.black,
@@ -254,9 +257,10 @@ class WorkCard extends StatelessWidget {
                                                       fontFamily: 'Regular',
                                                       fontSize: 12),
                                                   children: [
-                                                TextSpan(
-                                                  text:
-                                                      '${ListData['work_priority']['title']}',
+                                                    ListData['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                                                      TextSpan(text: ''):
+                                                    TextSpan(
+                                                  text: '${ListData['work_priority']['title']}',
                                                   style: TextStyle(
                                                       color: Color(0xffFFCA0D),
                                                       fontFamily: 'Regular',
@@ -795,8 +799,6 @@ class _ReportCardState extends State<ReportCard> {
                         onTap: () {
                           if (title.text != "" && location.text != "" && selectedimage != null) {
                             Map temp = {
-                              // 'title': title.text,
-                              // 'address': location.text,
                               'image': selectedimage,
                             };
 
@@ -853,6 +855,8 @@ class _ReportCardState extends State<ReportCard> {
                           img['images[$i]'] = data[i]['image'];
                         }
 
+                        print("report maintenance== ${request}");
+                        print("image_is== ${img}");
                         final response = await Webservices.postDataWithImageFunction(body: request, files: img, context: context, apiUrl: ApiUrls.report_maintenance);
 
                       this.setState(() {

@@ -336,7 +336,8 @@ class Maintenance_home_screenState extends State<Maintenance_home_screen> with S
                                 items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
                                 label: 'Select Date',
                                 selectedValue: selectedVal,
-                                width: 120,
+                                width: MediaQuery.of(context).size.width/3,
+                                dropdownwidth: MediaQuery.of(context).size.width/3,
                                 onChange: (val) async{
                                   setState(() {
 
@@ -345,6 +346,7 @@ class Maintenance_home_screenState extends State<Maintenance_home_screen> with S
                                   });
                                   ///calling api here
                                   assigned_task_list();
+                                  cleanerListApi();
                                 },
                               ),
 
@@ -360,7 +362,7 @@ class Maintenance_home_screenState extends State<Maintenance_home_screen> with S
                             maintenance_task_list_data.length == 0 ? Center(child: Lottie.asset(MyImages.no_data)) : ListView.builder(
                               itemCount: maintenance_task_list_data.length,
                               itemBuilder: (context, index) {
-
+                                print( 'checking_type===${maintenance_task_list_data[index]['work_priority'].runtimeType}',);
                                 if(
                                 maintenance_task_list_data[index]['apartment']['name'].toString().toLowerCase().contains(search.text) ||
                                     maintenance_task_list_data[index]['apartment']['location'].toString().toLowerCase().contains(search.text) ||

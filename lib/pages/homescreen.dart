@@ -102,19 +102,21 @@ class HomeScreenState extends State<HomeScreen> {
   List all_cleaner_list = [];
   bool _showCartBadge=false;
   bool maintenanceLoad=false;
+  ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
+  ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
 
 
   Future<void> taskList() async {
     setNotificationHandler(context);
 
+
     setState(() {load=true;});
 
-    if(widget.userType == UserType.Logistics){
+    if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics){
       final cleanerRes = await Webservices.getList(ApiUrls.all_cleaner_list);
-
       if (cleanerRes.length > 0) {
         all_cleaner_list = cleanerRes;
-        log("all_Cleaner_list: $cleaner_list");
+        log("all_Cleaner_list: $all_cleaner_list");
       }
     }
 
@@ -148,6 +150,7 @@ class HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> notiReq = {
       'user_id' : userDataNotifier.value?.id
     };
+    print('user_id-----${userDataNotifier.value?.id}');
     final notiRes= await Webservices.postData(apiUrl: ApiUrls.GetUnreadNotification, request: notiReq);
     log("Total unread notification: $notiRes");//unreadNotification
 
@@ -156,11 +159,8 @@ class HomeScreenState extends State<HomeScreen> {
 
     ///----------------------------------------------
 
-    if(widget.userType == UserType.Supervisor)
+    if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics)
     supervisorDropdownData();
-
-
-
 
     setState(() {load=false;});
 
@@ -203,7 +203,7 @@ class HomeScreenState extends State<HomeScreen> {
     badge_count.value = res['data']['un_read_count'];
     print("badge_count${badge_count.value}");
 
-    Future.delayed(Duration(seconds: 5),(){
+    Future.delayed(Duration(seconds: 25),(){
       interval_api();
     });
   }
@@ -324,13 +324,14 @@ class HomeScreenState extends State<HomeScreen> {
                     ParagraphText('${task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
 
 
-                      if(widget.userType==UserType.Cleaners || widget.userType==UserType.Maintenance)
+                      if(widget.userType==UserType.Cleaners || widget.userType==UserType.Maintenance || widget.userType==UserType.Secratary)
                       if(day7!=null)
                         DropDown(
                       items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
                       label: 'Select Date',
                       selectedValue: selectedVal,
-                      width: 120,
+                      width: MediaQuery.of(context).size.width/3,
+                      dropdownwidth: MediaQuery.of(context).size.width/3,
                       onChange: (val) async{
                         setState(() {
                           selectedVal = val;
@@ -341,7 +342,7 @@ class HomeScreenState extends State<HomeScreen> {
                         },
                     ),
 
-                    if(widget.userType==UserType.Supervisor||widget.userType==UserType.Logistics)
+                    if(widget.userType==UserType.Supervisor|| widget.userType==UserType.Logistics )
                       PopupMenuButton(
                         child:  Container(
                             padding: EdgeInsets.symmetric(horizontal: 12),
@@ -356,8 +357,8 @@ class HomeScreenState extends State<HomeScreen> {
                             return PopupMenuItem(
                               child: StatefulBuilder(
                                   builder: (BuildContext context, StateSetter popUPsetState){
-                                    ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
-                                    ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
+                                    // ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
+                                    // ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
                                     return GestureDetector(
                                       onTap: (){
                                         print('object$filterSelectedDate');
@@ -417,7 +418,7 @@ class HomeScreenState extends State<HomeScreen> {
                                                 return Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
-                                                    for(int i=0;i<apt_priority_data!['apartment_list'].length;i++ )
+                                                    for(int i=0;i<apt_priority_data?['apartment_list'].length;i++ )
                                                       Row(
                                                         children: [
                                                           Container(
@@ -505,7 +506,7 @@ class HomeScreenState extends State<HomeScreen> {
                                                     popUPsetState(() {isLoad=true;});
                                                     final response = await Webservices.getList(ApiUrls.task_list+"?date=$filterSelectedDate&"
                                                         "apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}&"
-                                                        "cleaner_keyword=${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
+                                                          "cleaner_keyword=${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
 
                                                     task_list_data = [];
 

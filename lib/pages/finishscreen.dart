@@ -290,16 +290,18 @@ class _FinishScreenState extends State<FinishScreen> {
                   right: 5,
                   child: RoundEdgedButton(
                     icon:MyImages.flag ,
-                    text: widget.taskDetail!['is_report'].toString() == '0' ?  'REPORT MAINTENANCE' : 'REPORTED',
+                    // text: widget.taskDetail!['is_report'].toString() == '0' ?  'REPORT MAINTENANCE' : 'REPORTED',
+                    text:  'REPORT MAINTENANCE' ,
                     fontSize: 10,
-                    width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
+                    // width: widget.taskDetail!['is_report'].toString() == '0' ? size_width*0.38 : size_width*0.22,
+                    width:  size_width*0.39 ,
                     height: 24,
                     verticalMargin:5,
                     verticalPadding: 0,
                     borderRadius: 5,
                     onTap:() async{
 
-                      if(widget.taskDetail!['is_report'].toString() == '0') {
+                      // if(widget.taskDetail!['is_report'].toString() == '0') {
                        await showDialog(
                           context: context,
                           builder: (ctx) =>
@@ -315,9 +317,9 @@ class _FinishScreenState extends State<FinishScreen> {
                         );
 
                        taskDetails();
-                      }else{
-                        toast('This task already been reported');
-                      }
+                      // }else{
+                      //   toast('This task already been reported');
+                      // }
                     },
 
                   ),
@@ -343,7 +345,14 @@ class _FinishScreenState extends State<FinishScreen> {
                 children: [
                   Icon(Icons.location_on_rounded,color: Color(0xffB49877),size:12,),
                   hSizedBox05,
-                  ParagraphText('${widget.taskDetail!['apartment']['location']}',color: Colors.black,fontSize: 12,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width/1.3,
+                    child: Wrap(
+                      children: [
+                        ParagraphText('${widget.taskDetail!['apartment']['location']}', maxline:2, color: Colors.black,fontSize: 12,),
+                      ],
+                    ),
+                  ),
 
                 ],
               ),
