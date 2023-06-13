@@ -1024,7 +1024,7 @@ class _MaintenanceCradState extends State<MaintenanceCrad> {
 
 
                         if(Response['status'].toString() == '1'){
-                          Navigator.pop(context);
+                          Navigator.of(context).pop(true);
                           Navigator.pop(context);
 
                         }else{

@@ -1423,7 +1423,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                                       isLoad: finish_load,
                                       loaderColor: MyColors.whiteColor,
                                       onTap: () async{
-                                        await showDialog(
+                                      bool? result =  await showDialog(
                                           context: context,
                                           builder: (ctx) =>
                                               Dialog(
@@ -1435,9 +1435,13 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                                               ),
                                         );
 
+                                      if(result == true) {
                                         Navigator.pop(context);
                                         maintenance_task_detail();
                                         toast("Thank you ! Task has been finish successfully");
+                                      }else{
+                                        Navigator.pop(context);
+                                      }
                                       },
 
                                     ),
