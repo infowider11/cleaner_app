@@ -120,7 +120,7 @@ class HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    final Response= await Webservices.getList(ApiUrls.task_list+"?date=$formatted_date&user_id=${userDataNotifier.value?.id}&type=1");
+    final Response= await Webservices.getList(ApiUrls.task_list+"?date=$formatted_date&user_id=${userDataNotifier.value?.id}&type=1&n=99");
 
 
 
