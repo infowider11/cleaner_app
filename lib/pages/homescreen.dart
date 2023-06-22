@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:badges/badges.dart' as badges;
+import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cleanerapp/constants/colors.dart';
 import 'package:cleanerapp/constants/global_data.dart';
 import 'package:cleanerapp/constants/images_url.dart';
@@ -32,7 +33,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   DateTime selectedDate = DateTime.now();
   bool isdateselected= false;
   bool load=false;
@@ -102,9 +103,13 @@ class HomeScreenState extends State<HomeScreen> {
   List all_cleaner_list = [];
   bool _showCartBadge=false;
   bool maintenanceLoad=false;
+  bool maintenancelistLoad=false;
+  bool assign_load =false;
+
   ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
   ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
-
+  late TabController tabController;
+  List maintenance_task_list_data=[];
 
   Future<void> taskList() async {
     setNotificationHandler(context);
@@ -112,13 +117,14 @@ class HomeScreenState extends State<HomeScreen> {
 
     setState(() {load=true;});
 
-    if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics){
+    // if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics){
       final cleanerRes = await Webservices.getList(ApiUrls.all_cleaner_list);
       if (cleanerRes.length > 0) {
         all_cleaner_list = cleanerRes;
+        all_cleaner_list!.add({'id':'all','name':'All'});
         log("all_Cleaner_list: $all_cleaner_list");
       }
-    }
+    // }
 
     final Response= await Webservices.getList(ApiUrls.task_list+"?date=$formatted_date&user_id=${userDataNotifier.value?.id}&type=1&n=99");
 
@@ -159,7 +165,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     ///----------------------------------------------
 
-    if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics)
+    // if(widget.userType == UserType.Supervisor || widget.userType == UserType.Logistics)
     supervisorDropdownData();
 
     setState(() {load=false;});
@@ -174,6 +180,7 @@ class HomeScreenState extends State<HomeScreen> {
     
     if(Response.length>0){
       apt_priority_data = Response ;
+      apt_priority_data!['apartment_list'].add({'id':'all','name':'All'});
       log("apartment_&_priority_list_response---${apt_priority_data}");
     }
     
@@ -208,7 +215,68 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  maintenance_taskList() async{
 
+    setState(() {maintenancelistLoad =true;});
+
+    Map<String, dynamic> request =  {
+      'date' : formatted_date,
+    };
+
+    final Response= await Webservices.postData(apiUrl: ApiUrls.maintenance_task_list, request: request);
+
+    if(Response.length>0) {
+      maintenance_task_list_data = Response['data'];
+      log("maintenace_task_list===${maintenance_task_list_data}");
+
+    }else{
+      maintenance_task_list_data=[];
+    }
+
+    setState(() {maintenancelistLoad =false;});
+  }
+
+  assigned_task_list() async{
+
+    setState(() {assign_load = true;});
+
+    Map<String, dynamic> request =  {
+      'date' : formatted_date,
+      'user_id' : userDataNotifier.value?.id,
+    };
+
+    final Response= await Webservices.postData(apiUrl: ApiUrls.admin_maintenance_task, request: request);
+
+    setState(() {assign_load = false;});
+
+    maintenance_task_list_data=[];
+    if(Response.length>0) {
+      maintenance_task_list_data = Response['data'];
+      log("assigned_task_list===${maintenance_task_list_data}");
+
+    }else{
+      maintenance_task_list_data=[];
+    }
+  }
+
+  void _handleTabChange() {
+    if (tabController.indexIsChanging) {
+      switch (tabController.index) {
+        case 0:
+          maintenance_taskList();
+          print('First tab tapped');
+          break;
+        case 1:
+          assigned_task_list();
+          print('Second tab tapped');
+          break;
+        case 2:
+          taskList();
+          print('Third tab tapped');
+          break;
+      }
+    }
+  }
 
 
   @override
@@ -216,6 +284,8 @@ class HomeScreenState extends State<HomeScreen> {
     if(widget.userType != UserType.Maintenance)
       taskList();
     super.initState();
+    tabController = TabController(length: 3, vsync: this);
+    tabController.addListener(_handleTabChange);
   }
 
   @override
@@ -296,10 +366,530 @@ class HomeScreenState extends State<HomeScreen> {
 
           ),
             body:
-            load==true || load2==true || loadAddTask == true || maintenanceLoad == true? Center(child: CupertinoActivityIndicator(radius: 20, color: MyColors.primaryColor,),):
+            load==true || load2==true || loadAddTask == true || maintenanceLoad == true || maintenancelistLoad == true || assign_load == true  ?
+            Center(child: CupertinoActivityIndicator(radius: 20, color: MyColors.primaryColor,),):
+            widget.userType == UserType.Secratary? Padding(
+            padding: const EdgeInsets.symmetric(horizontal:14),
+            child: DefaultTabController(
+              length: 3,
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    vSizedBox,
+
+                    ButtonsTabBar(
+                      controller: tabController,
+                      backgroundColor: MyColors.primaryColor,
+                      unselectedBackgroundColor: Colors.grey[300],
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                      unselectedLabelStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      labelStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      tabs: [
+                        Tab(text: "Reported Task"),
+                        Tab(text: "Assigned Task"),
+                        Tab(text: "Cleaner Task"),
+                      ],
+                    ),
+
+                    CustomTextField(
+                      preffix: Icon(Icons.search_sharp,color: Color(0xff000000).withOpacity(0.4),),
+                      controller: search,
+                      hintcolor: Color(0xff000000).withOpacity(0.4),
+                      textColor: Color(0xff000000).withOpacity(0.4),
+                      hintText: 'Search',
+                      bgColor:Colors.white,
+                      borderRadius: 8,
+                      onChanged: (val){
+                        setState(() {});
+                      },
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+
+
+                        // if(widget.userType==UserType.Supervisor|| widget.userType==UserType.Logistics )
+                        PopupMenuButton(
+                          child:  Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                                  borderRadius: BorderRadius.circular(5)
+                              ),
+                              child:ParagraphText('Sort By',color: Colors.black,)
+                          ),
+                          itemBuilder: (context) {
+                            return List.generate(1, (index) {
+                              return PopupMenuItem(
+                                child: StatefulBuilder(
+                                    builder: (BuildContext context, StateSetter popUPsetState){
+                                      // ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
+                                      // ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
+                                      return GestureDetector(
+                                        onTap: (){
+                                          print('object$filterSelectedDate');
+                                        },
+                                        behavior: HitTestBehavior.opaque,
+                                        child: Container(
+                                          width: MediaQuery.of(context).size.width,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Container(
+                                                    child: Center(
+                                                        child:
+                                                        isdateselected==false?
+                                                        Text(
+                                                          "Date",
+                                                          style: TextStyle(
+                                                              fontSize: 14
+                                                          ),
+                                                        ):
+                                                        ParagraphText( DateFormat("dd-MMM-yyyy").format(this.selectedDate),)
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                        color: Color(0xfff1f1f1),
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        border: Border.all(color: Color(0xFFe1e1e1))
+                                                    ),
+                                                    width: MediaQuery.of(context).size.width,
+                                                    height: 30,
+                                                  ),
+                                                  vSizedBox05,
+                                                  RoundEdgedButton(text: 'Select Date',
+                                                    onTap: () async{
+                                                      await pick_date();
+
+                                                      popUPsetState((){});
+                                                    },
+                                                    color: MyColors.primaryColor,
+                                                    height: 30,
+                                                    verticalPadding: 0,
+                                                    horizontalMargin: 0,
+                                                    verticalMargin: 0,
+                                                    borderRadius: 7,
+                                                  ),
+                                                ],
+                                              ),
+                                              vSizedBox2,
+
+                                              Text('Building',style: TextStyle(fontSize:20,fontFamily: 'OpenSansSemiBold'),),
+                                              vSizedBox,
+                                              ValueListenableBuilder(
+                                                  valueListenable: buildingIndexNotifier,
+                                                  builder: (context, selectedIndex, child) {
+                                                    return Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        for(int i=0;i<apt_priority_data?['apartment_list'].length;i++ )
+                                                          Row(
+                                                            children: [
+                                                              Container(
+                                                                height: 30,
+                                                                child: Radio<int>(
+                                                                  value: i,
+                                                                  groupValue: buildingIndexNotifier.value,
+                                                                  activeColor: MyColors.primaryColor,
+                                                                  onChanged: (val){
+                                                                    buildingIndexNotifier.value = i;
+                                                                    print("building ${apt_priority_data?['apartment_list'][i]['name']} & id is "
+                                                                        "${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}");
+                                                                  },
+
+                                                                ),
+                                                              ),
+                                                              hSizedBox,
+                                                              Text('${apt_priority_data?['apartment_list'][i]['name']}',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular'),),
+                                                            ],
+                                                          ),
+                                                      ],
+                                                    );
+                                                  }
+                                              ),
+                                              vSizedBox2,
+                                              Text('Cleaners',style: TextStyle(fontSize: 20,fontFamily: 'OpenSansSemiBold'),),
+                                              vSizedBox,
+                                              ValueListenableBuilder(
+                                                valueListenable: cleanerIndexNotifier,
+                                                builder: (context, cleanerIndex, child){
+                                                  return Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                                                    children: [
+
+                                                      for(int i=0;i<all_cleaner_list.length;i++ )
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              height: 30,
+                                                              child: Radio<int>(
+                                                                value: i,
+                                                                groupValue: cleanerIndexNotifier.value,
+                                                                activeColor: MyColors.primaryColor,
+                                                                onChanged: (val){
+                                                                  cleanerIndexNotifier.value = i;
+                                                                  print("cleaner ${all_cleaner_list?[i]['name']} & id is "
+                                                                      "${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
+                                                                },
+
+                                                              ),
+                                                            ),
+                                                            hSizedBox,
+                                                            Text('${all_cleaner_list?[i]['name']}',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular'),),
+                                                          ],
+                                                        )
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                              vSizedBox2,
+                                              Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: (){
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Container(
+                                                      padding: EdgeInsets.symmetric(horizontal: 14,vertical: 5),
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          color: MyColors.primaryColor
+                                                      ),
+                                                      child: Text('Cancle',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
+
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () async{
+                                                      ///here we are calling sorting api
+
+                                                      if( tabController.index == 0){
+                                                        setState(() {load=true;});
+                                                        popUPsetState(() {isLoad=true;});
+                                                        final response = await Webservices.getList(ApiUrls.maintenance_task_list+"?apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}");
+
+                                                        maintenance_task_list_data=[];
+
+
+                                                        if (response.length > 0) {
+                                                          maintenance_task_list_data = response;
+                                                          Navigator.pop(context);
+                                                          toast("Sorting done successfully");
+                                                        }else{
+                                                          Navigator.pop(context);
+                                                          maintenance_task_list_data = [];
+                                                          toast("Nothing found :( ");
+                                                        }
+                                                        setState(() {load=false;});
+                                                        popUPsetState(() {isLoad=false;});
+                                                      }
+                                                      else if( tabController.index == 2){
+                                                        setState(() {load=true;});
+                                                        popUPsetState(() {isLoad=true;});
+                                                        final response = await Webservices.getList(ApiUrls.task_list+"?date=$filterSelectedDate&"
+                                                            "apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}&"
+                                                            "cleaner_keyword=${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
+
+                                                        task_list_data = [];
+
+                                                        if (response.length > 0) {
+                                                          task_list_data = response;
+                                                          Navigator.pop(context);
+                                                          toast("Sorting done successfully");
+                                                        }else{
+                                                          Navigator.pop(context);
+                                                          task_list_data = [];
+                                                          toast("Nothing found :( ");
+                                                        }
+                                                        setState(() {load=false;});
+                                                        popUPsetState(() {isLoad=false;});
+                                                      }
+                                                      else{
+
+                                                        setState(() {load=true;});
+                                                        popUPsetState(() {isLoad=true;});
+                                                        final response = await Webservices.getList(ApiUrls.admin_maintenance_task+"?apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}");
+
+                                                        maintenance_task_list_data=[];
+
+                                                        if (response.length > 0) {
+                                                          maintenance_task_list_data = response;
+                                                          Navigator.pop(context);
+                                                          toast("Sorting done successfully");
+                                                        }else{
+                                                          Navigator.pop(context);
+                                                          maintenance_task_list_data = [];
+                                                          toast("Nothing found :( ");
+                                                        }
+                                                        setState(() {load=false;});
+                                                        popUPsetState(() {isLoad=false;});
+                                                      }
+
+                                                    },
+                                                    child: Container(
+                                                      padding: EdgeInsets.symmetric(horizontal:14,vertical: 5),
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(5),
+                                                          color: MyColors.primaryColor
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Text('Apply',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
+                                                          if(isLoad==true)
+                                                            Row(
+                                                              children: [
+                                                                SizedBox(width: MediaQuery.of(context).size.width*0.03),
+                                                                CupertinoActivityIndicator(radius: 8, color:MyColors.whiteColor,)
+                                                              ],
+                                                            )
+                                                        ],
+                                                      ),
+
+                                                    ),
+                                                  ),
+
+                                                ],
+                                              )
+
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                ),
+                              );
+                            });
+                          },
+                        ),
+
+                          // if(widget.userType==UserType.Cleaners || widget.userType==UserType.Maintenance || widget.userType==UserType.Secratary)
+                          if(day7!=null)
+                            DropDown(
+                          items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
+                          label: 'Select Date',
+                          selectedValue: selectedVal,
+                          width: MediaQuery.of(context).size.width/3,
+                          dropdownwidth: MediaQuery.of(context).size.width/3,
+                          onChange: (val) async{
+                            setState(() {
+                              selectedVal = val;
+                              formatted_date = selectedVal!;
+                            });
+                            ///calling api here
+                            taskList();
+                            },
+                        ),
+
+
+                      ],
+                    ),
+
+                    vSizedBox,
+
+                    if(task_list_data.length == 0)
+                      ParagraphText('No Task For ${selectedVal??"Today"}',fontSize: 12,)
+                    else
+                      ParagraphText('${task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
+
+
+                    Expanded(
+                        child: TabBarView(
+                          controller: tabController,
+                          children: [
+                            maintenance_task_list_data.length == 0 ? Center(child: Lottie.asset(MyImages.no_data)) : ListView.builder(
+                              itemCount: maintenance_task_list_data.length,
+                              itemBuilder: (context, index) {
+                                print( 'checking_type===${maintenance_task_list_data[index]['work_priority'].runtimeType}',);
+                                if(
+                                maintenance_task_list_data[index]['apartment']['name'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment']['location'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['location'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment']['apartment_no'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['time'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment_type']['name'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['work_priority']['title'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['title'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['assinged_by']['name'].toString().toLowerCase().contains(search.text)
+                                ) {
+                                  return GestureDetector(
+                                    onTap: () async{
+
+                                      await push(context: context, screen: TaskDetailsScreen(task_id: maintenance_task_list_data[index]['id'], ));
+                                      maintenance_taskList();
+                                    },
+                                    child: WorkCard(
+                                      usertype: UserType.Maintenance,
+                                      onTap: () {
+
+                                      },
+                                      ListData: maintenance_task_list_data[index],
+                                      isMaintenance: true,
+                                      workStatus: maintenance_task_list_data[index]['status'].toString() == '2' ? 'IN PROGRESS':
+                                      maintenance_task_list_data[index]['status'].toString() == '1' ? 'COMPLETED': 'NOT STARTED',
+                                    ),
+                                  );
+                                }
+                                else{
+                                  return Container(
+                                    height: 500,
+                                    child: Center(child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('No Task found :(', style: TextStyle(fontSize: 20, color: MyColors.primaryColor, fontWeight: FontWeight.w900, ),),
+                                        // Image.asset(MyImages.sad_emoji, height: 50,)
+                                      ],
+                                    ),),
+                                  );
+                                }
+                              },
+                            ),
+                            maintenance_task_list_data.length == 0 ? Center(child: Lottie.asset(MyImages.no_data)) : ListView.builder(
+                              itemCount: maintenance_task_list_data.length,
+                              itemBuilder: (context, index) {
+
+                                if(
+                                maintenance_task_list_data[index]['apartment']['name'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment']['location'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['location'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment']['apartment_no'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['time'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['apartment_type']['name'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['work_priority']['title'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['title'].toString().toLowerCase().contains(search.text) ||
+                                    maintenance_task_list_data[index]['assinged_by']['name'].toString().toLowerCase().contains(search.text)
+                                ) {
+                                  return GestureDetector(
+                                    onTap: () async{
+
+                                      await push(context: context, screen: TaskDetailsScreen(task_id: maintenance_task_list_data[index]['id'], ));
+                                      assigned_task_list();
+                                    },
+                                    child: WorkCard(
+                                      usertype: UserType.Maintenance,
+                                      onTap: () {
+
+                                      },
+                                      ListData: maintenance_task_list_data[index],
+                                      isMaintenance: true,
+                                      workStatus: maintenance_task_list_data[index]['status'].toString() == '2' ? 'IN PROGRESS':
+                                      maintenance_task_list_data[index]['status'].toString() == '1' ? 'COMPLETED': 'NOT STARTED',
+                                    ),
+                                  );
+                                }
+                                else{
+                                  return Container(
+                                    height: 500,
+                                    child: Center(child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('No Task found :(', style: TextStyle(fontSize: 20, color: MyColors.primaryColor, fontWeight: FontWeight.w900, ),),
+                                        // Image.asset(MyImages.sad_emoji, height: 50,)
+                                      ],
+                                    ),),
+                                  );
+                                }
+                              },
+                            ),
+                            task_list_data.length == 0 ? Expanded(child: Center(child: Lottie.asset(MyImages.no_data))) : ListView.builder(
+                        itemCount: task_list_data.length,
+                        itemBuilder: (context, index) {
+
+                          if(
+                          task_list_data[index]['apartment']['name'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['apartment']['location'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['apartment']['check_list'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['apartment']['apartment_no'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['time'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['apartment_type']['name'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['work_priority']['title'].toString().toLowerCase().contains(search.text) ||
+                              task_list_data[index]['assinged_by']['name'].toString().toLowerCase().contains(search.text)
+
+                          ) {
+                            return GestureDetector(
+                              onTap: () async{
+                                print('abcd');
+                                await push(context: context, screen: TaskDetailsScreen(task_id: task_list_data[index]['id'], ));
+                                taskList();
+                              },
+                              child: WorkCard(
+                                usertype: widget.userType,
+                                onTap: () {
+
+                                },
+                                ListData: task_list_data[index],
+                                isMaintenance: userDataNotifier.value?.userType == UserType.Maintenance,
+                                workStatus: task_list_data[index]['status'].toString() == '0' ? 'NOT STARTED':
+                                task_list_data[index]['status'].toString() == '1' ? 'COMPLETED': 'IN PROGRESS',
+                                mark_as_supervisor_Tap:  () async{
+                                  if( task_list_data[index]['supervisior_task_status'].toString() == "1"){
+                                    toast('You have already supervised this task.');
+                                  }
+                                  else {
+                                    // if(task_list_data[index]['status'].toString() == "1" ){
+
+                                    ///checked by supervisor api
+                                    Map<String,dynamic> request={
+                                      'task_id': task_list_data[index]['id'],
+                                      'check_status': "1",
+                                    };
+
+                                    setState(() {
+                                      load2=true;
+                                    });
+                                    final Response= await Webservices.postData(apiUrl: ApiUrls.supervisior_check_task , request: request, showErrorMessage: false, showSuccessMessage: false);
+                                    log("checked by supervisor api response---$Response");
+
+                                    setState(() {
+                                      load2=false;
+                                    });
+
+                                    if(Response['status'].toString() =="1"){
+                                      toast("Task has been supervised");
+                                      taskList();
+                                    }else{
+                                      toast("${Response['message']}");
+                                    }
+                                  }
+                                  // else{
+                                  //   toast('This task has not been completed yet.');
+                                  // }
+
+
+                                },
+                              ),
+                            );
+                          }
+                          else{
+                            return Container(
+                              height: 500,
+                              child: Center(child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('No Task found :(', style: TextStyle(fontSize: 20, color: MyColors.primaryColor, fontWeight: FontWeight.w900, ),),
+                                  // Image.asset(MyImages.sad_emoji, height: 50,)
+                                ],
+                              ),),
+                            );
+                          }
+                        },
+                      ),
+                          ],))
+                  ],
+                ),
+              ),
+            ),
+          ):
             Padding(
             padding: const EdgeInsets.symmetric(horizontal:14),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 vSizedBox2,
                 CustomTextField(
@@ -318,101 +908,79 @@ class HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if(task_list_data.length == 0)
-                      ParagraphText('No Task For ${selectedVal??"Today"}',fontSize: 12,)
-                    else
-                    ParagraphText('${task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
 
 
-                      if(widget.userType==UserType.Cleaners || widget.userType==UserType.Maintenance || widget.userType==UserType.Secratary)
-                      if(day7!=null)
-                        DropDown(
-                      items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
-                      label: 'Select Date',
-                      selectedValue: selectedVal,
-                      width: MediaQuery.of(context).size.width/3,
-                      dropdownwidth: MediaQuery.of(context).size.width/3,
-                      onChange: (val) async{
-                        setState(() {
-                          selectedVal = val;
-                          formatted_date = selectedVal!;
-                        });
-                        ///calling api here
-                        taskList();
-                        },
-                    ),
-
-                    if(widget.userType==UserType.Supervisor|| widget.userType==UserType.Logistics )
-                      PopupMenuButton(
-                        child:  Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            child:ParagraphText('Sort By',color: Colors.black,)
-                        ),
-                        itemBuilder: (context) {
-                          return List.generate(1, (index) {
-                            return PopupMenuItem(
-                              child: StatefulBuilder(
-                                  builder: (BuildContext context, StateSetter popUPsetState){
-                                    // ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
-                                    // ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
-                                    return GestureDetector(
-                                      onTap: (){
-                                        print('object$filterSelectedDate');
-                                      },
-                                      behavior: HitTestBehavior.opaque,
-                                      child: Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                Container(
-                                                  child: Center(
-                                                      child:
-                                                      isdateselected==false?
-                                                      Text(
-                                                        "Date",
-                                                        style: TextStyle(
-                                                            fontSize: 14
-                                                        ),
-                                                      ):
-                                                      ParagraphText( DateFormat("dd-MMM-yyyy").format(this.selectedDate),)
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                      color: Color(0xfff1f1f1),
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      border: Border.all(color: Color(0xFFe1e1e1))
-                                                  ),
-                                                  width: MediaQuery.of(context).size.width,
-                                                  height: 30,
+                    // if(widget.userType==UserType.Supervisor|| widget.userType==UserType.Logistics )
+                    PopupMenuButton(
+                      child:  Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                              borderRadius: BorderRadius.circular(5)
+                          ),
+                          child:ParagraphText('Sort By',color: Colors.black,)
+                      ),
+                      itemBuilder: (context) {
+                        return List.generate(1, (index) {
+                          return PopupMenuItem(
+                            child: StatefulBuilder(
+                                builder: (BuildContext context, StateSetter popUPsetState){
+                                  // ValueNotifier<int> buildingIndexNotifier = ValueNotifier(0);
+                                  // ValueNotifier<int> cleanerIndexNotifier = ValueNotifier(0);
+                                  return GestureDetector(
+                                    onTap: (){
+                                      print('object$filterSelectedDate');
+                                    },
+                                    behavior: HitTestBehavior.opaque,
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Container(
+                                                child: Center(
+                                                    child:
+                                                    isdateselected==false?
+                                                    Text(
+                                                      "Date",
+                                                      style: TextStyle(
+                                                          fontSize: 14
+                                                      ),
+                                                    ):
+                                                    ParagraphText( DateFormat("dd-MMM-yyyy").format(this.selectedDate),)
                                                 ),
-                                                vSizedBox05,
-                                                RoundEdgedButton(text: 'Select Date',
-                                                  onTap: () async{
-                                                    await pick_date();
-
-                                                    popUPsetState((){});
-                                                  },
-                                                  color: MyColors.primaryColor,
-                                                  height: 30,
-                                                  verticalPadding: 0,
-                                                  horizontalMargin: 0,
-                                                  verticalMargin: 0,
-                                                  borderRadius: 7,
+                                                decoration: BoxDecoration(
+                                                    color: Color(0xfff1f1f1),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(color: Color(0xFFe1e1e1))
                                                 ),
-                                              ],
-                                            ),
-                                            vSizedBox2,
+                                                width: MediaQuery.of(context).size.width,
+                                                height: 30,
+                                              ),
+                                              vSizedBox05,
+                                              RoundEdgedButton(text: 'Select Date',
+                                                onTap: () async{
+                                                  await pick_date();
 
-                                            Text('Building',style: TextStyle(fontSize:20,fontFamily: 'OpenSansSemiBold'),),
-                                            vSizedBox,
-                                            ValueListenableBuilder(
+                                                  popUPsetState((){});
+                                                },
+                                                color: MyColors.primaryColor,
+                                                height: 30,
+                                                verticalPadding: 0,
+                                                horizontalMargin: 0,
+                                                verticalMargin: 0,
+                                                borderRadius: 7,
+                                              ),
+                                            ],
+                                          ),
+                                          vSizedBox2,
+
+                                          Text('Building',style: TextStyle(fontSize:20,fontFamily: 'OpenSansSemiBold'),),
+                                          vSizedBox,
+                                          ValueListenableBuilder(
                                               valueListenable: buildingIndexNotifier,
                                               builder: (context, selectedIndex, child) {
                                                 return Column(
@@ -431,7 +999,7 @@ class HomeScreenState extends State<HomeScreen> {
                                                                 buildingIndexNotifier.value = i;
                                                                 print("building ${apt_priority_data?['apartment_list'][i]['name']} & id is "
                                                                     "${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}");
-                                                            },
+                                                              },
 
                                                             ),
                                                           ),
@@ -442,123 +1010,150 @@ class HomeScreenState extends State<HomeScreen> {
                                                   ],
                                                 );
                                               }
-                                            ),
-                                            vSizedBox2,
-                                            Text('Cleaners',style: TextStyle(fontSize: 20,fontFamily: 'OpenSansSemiBold'),),
-                                            vSizedBox,
-                                            ValueListenableBuilder(
-                                              valueListenable: cleanerIndexNotifier,
-                                              builder: (context, cleanerIndex, child){
-                                                return Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                          ),
+                                          vSizedBox2,
+                                          Text('Cleaners',style: TextStyle(fontSize: 20,fontFamily: 'OpenSansSemiBold'),),
+                                          vSizedBox,
+                                          ValueListenableBuilder(
+                                            valueListenable: cleanerIndexNotifier,
+                                            builder: (context, cleanerIndex, child){
+                                              return Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
 
-                                                  children: [
+                                                children: [
 
-                                                    for(int i=0;i<all_cleaner_list.length;i++ )
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                            height: 30,
-                                                            child: Radio<int>(
-                                                              value: i,
-                                                              groupValue: cleanerIndexNotifier.value,
-                                                              activeColor: MyColors.primaryColor,
-                                                              onChanged: (val){
-                                                                cleanerIndexNotifier.value = i;
-                                                                print("cleaner ${all_cleaner_list?[i]['name']} & id is "
-                                                                    "${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
-                                                              },
-
-                                                            ),
-                                                          ),
-                                                          hSizedBox,
-                                                          Text('${all_cleaner_list?[i]['name']}',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular'),),
-                                                        ],
-                                                      )
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                            vSizedBox2,
-                                            Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: (){
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 14,vertical: 5),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        color: MyColors.primaryColor
-                                                    ),
-                                                    child: Text('Cancle',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
-
-                                                  ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () async{
-                                                    ///here we are calling sorting api
-
-                                                    setState(() {load=true;});
-                                                    popUPsetState(() {isLoad=true;});
-                                                    final response = await Webservices.getList(ApiUrls.task_list+"?date=$filterSelectedDate&"
-                                                        "apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}&"
-                                                          "cleaner_keyword=${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
-
-                                                    task_list_data = [];
-
-                                                    if (response.length > 0) {
-                                                      task_list_data = response;
-                                                      Navigator.pop(context);
-                                                      toast("Sorting done successfully");
-                                                    }else{
-                                                      Navigator.pop(context);
-                                                      task_list_data = [];
-                                                      toast("Nothing found :( ");
-                                                    }
-                                                    setState(() {load=false;});
-                                                    popUPsetState(() {isLoad=false;});
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.symmetric(horizontal:14,vertical: 5),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        color: MyColors.primaryColor
-                                                    ),
-                                                    child: Row(
+                                                  for(int i=0;i<all_cleaner_list.length;i++ )
+                                                    Row(
                                                       children: [
-                                                        Text('Apply',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
-                                                        if(isLoad==true)
-                                                          Row(
-                                                            children: [
-                                                              SizedBox(width: MediaQuery.of(context).size.width*0.03),
-                                                              CupertinoActivityIndicator(radius: 8, color:MyColors.whiteColor,)
-                                                            ],
-                                                          )
+                                                        Container(
+                                                          height: 30,
+                                                          child: Radio<int>(
+                                                            value: i,
+                                                            groupValue: cleanerIndexNotifier.value,
+                                                            activeColor: MyColors.primaryColor,
+                                                            onChanged: (val){
+                                                              cleanerIndexNotifier.value = i;
+                                                              print("cleaner ${all_cleaner_list?[i]['name']} & id is "
+                                                                  "${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
+                                                            },
+
+                                                          ),
+                                                        ),
+                                                        hSizedBox,
+                                                        Text('${all_cleaner_list?[i]['name']}',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular'),),
                                                       ],
-                                                    ),
-
+                                                    )
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                          vSizedBox2,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: (){
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 14,vertical: 5),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      color: MyColors.primaryColor
                                                   ),
+                                                  child: Text('Cancle',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
+
                                                 ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () async{
+                                                  ///here we are calling sorting api
 
-                                              ],
-                                            )
+                                                  setState(() {load=true;});
+                                                  popUPsetState(() {isLoad=true;});
+                                                  final response = await Webservices.getList(ApiUrls.task_list+"?date=$filterSelectedDate&"
+                                                      "apartment_keyword=${apt_priority_data?['apartment_list'][buildingIndexNotifier.value]['id']}&"
+                                                      "cleaner_keyword=${all_cleaner_list?[cleanerIndexNotifier.value]['id']}");
 
-                                          ],
-                                        ),
+                                                  task_list_data = [];
+
+                                                  if (response.length > 0) {
+                                                    task_list_data = response;
+                                                    Navigator.pop(context);
+                                                    toast("Sorting done successfully");
+                                                  }else{
+                                                    Navigator.pop(context);
+                                                    task_list_data = [];
+                                                    toast("Nothing found :( ");
+                                                  }
+                                                  setState(() {load=false;});
+                                                  popUPsetState(() {isLoad=false;});
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal:14,vertical: 5),
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      color: MyColors.primaryColor
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Text('Apply',style: TextStyle(fontSize:14,fontFamily: 'OpenSansRegular',color: Color(0xffffffff)),),
+                                                      if(isLoad==true)
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(width: MediaQuery.of(context).size.width*0.03),
+                                                            CupertinoActivityIndicator(radius: 8, color:MyColors.whiteColor,)
+                                                          ],
+                                                        )
+                                                    ],
+                                                  ),
+
+                                                ),
+                                              ),
+
+                                            ],
+                                          )
+
+                                        ],
                                       ),
-                                    );
-                                  }
-                              ),
-                            );
-                          });
+                                    ),
+                                  );
+                                }
+                            ),
+                          );
+                        });
+                      },
+                    ),
+
+                      // if(widget.userType==UserType.Cleaners || widget.userType==UserType.Maintenance || widget.userType==UserType.Secratary)
+                      if(day7!=null)
+                        DropDown(
+                      items: [day13, day12, day11, day10, day9, day8, day1,day2, day3, day4, day5, day6, day7],
+                      label: 'Select Date',
+                      selectedValue: selectedVal,
+                      width: MediaQuery.of(context).size.width/3,
+                      dropdownwidth: MediaQuery.of(context).size.width/3,
+                      onChange: (val) async{
+                        setState(() {
+                          selectedVal = val;
+                          formatted_date = selectedVal!;
+                        });
+                        ///calling api here
+                        taskList();
                         },
-                      ),
+                    ),
+
+
                   ],
                 ),
+
+                vSizedBox,
+
+                if(task_list_data.length == 0)
+                  ParagraphText('No Task For ${selectedVal??"Today"}',fontSize: 12,)
+                else
+                  ParagraphText('${task_list_data.length} Task For ${selectedVal??"Today"}',fontSize: 12,),
 
 
                 task_list_data.length == 0 ? Expanded(child: Center(child: Lottie.asset(MyImages.no_data))) :

@@ -21,6 +21,8 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import '../constants/global_data.dart';
 import '../services/api_urls.dart';
 import '../services/webservices.dart';
@@ -292,13 +294,21 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                               scrollDirection: Axis.horizontal,
                               itemCount: taskDetail!['apartment']['image'].length,
                               itemBuilder: (context, index) {
-                                return  CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  height: 170,
-                                  width: MediaQuery.of(context).size.width,
-                                  placeholder: (context, url) =>
-                                  const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
-                                  imageUrl: taskDetail!['apartment']['image'][index]['image'],
+                                return  InkWell(
+                                  onTap: (){
+                                    print("Tap to open image");
+                                    push(context: context, screen: GalleryImages(
+                                        images: taskDetail!['apartment']['image'],
+                                        imgImdex:index ));
+                                  },
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    height: 170,
+                                    width: MediaQuery.of(context).size.width,
+                                    placeholder: (context, url) =>
+                                    const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
+                                    imageUrl: taskDetail!['apartment']['image'][index]['image'],
+                                  ),
                                 );
                               });});}).toList(),
 
@@ -428,6 +438,26 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                         ParagraphText('Started on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(taskDetail!['date']))}  ${taskDetail!['time']}',color: Colors.black,fontSize: 12,),
                       ],
                     ),
+                    RichText(
+                        text: TextSpan(
+                            text: 'Priority: ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight:
+                                FontWeight.w500,
+                                fontFamily: 'Regular',
+                                fontSize: 12),
+                            children: [
+                              taskDetail!['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                              TextSpan(text: ''):
+                              TextSpan(
+                                text: '${taskDetail!['work_priority']['title']}',
+                                style: TextStyle(
+                                    color: MyColors.primaryColor,
+                                    fontFamily: 'bold',
+                                    fontSize: 12),
+                              )
+                            ])),
                   ],
                 ),
               ),
@@ -700,13 +730,21 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                               scrollDirection: Axis.horizontal,
                               itemCount: taskDetail!['apartment']['image'].length,
                               itemBuilder: (context, index) {
-                                return  CachedNetworkImage(
-                                  fit: BoxFit.cover,
-                                  height: 170,
-                                  width: MediaQuery.of(context).size.width,
-                                  placeholder: (context, url) =>
-                                  const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
-                                  imageUrl: taskDetail!['apartment']['image'][index]['image'],
+                                return  InkWell(
+                                  onTap: (){
+                                    print("Tap to open image");
+                                    push(context: context, screen: GalleryImages(
+                                        images: taskDetail!['apartment']['image'],
+                                        imgImdex:index ));
+                                  },
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    height: 170,
+                                    width: MediaQuery.of(context).size.width,
+                                    placeholder: (context, url) =>
+                                    const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
+                                    imageUrl: taskDetail!['apartment']['image'][index]['image'],
+                                  ),
                                 );
                               });});}).toList(),
 
@@ -830,6 +868,28 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                         ParagraphText('Assigned on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(taskDetail!['date']))}  ${taskDetail!['time']}',color: Colors.black,fontSize: 12,),
                       ],
                     ),
+
+                    RichText(
+                        text: TextSpan(
+                            text: 'Priority: ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight:
+                                FontWeight.w500,
+                                fontFamily: 'Regular',
+                                fontSize: 12),
+                            children: [
+                              taskDetail!['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                              TextSpan(text: ''):
+                              TextSpan(
+                                text: '${taskDetail!['work_priority']['title']}',
+                                style: TextStyle(
+                                    color: MyColors.primaryColor,
+                                    fontFamily: 'bold',
+                                    fontSize: 12),
+                              )
+                            ])),
+
                   ],
                 ),
               ),
@@ -1071,17 +1131,49 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if(maintenanceTaskDetail?['task_image'] != "")
-            CachedNetworkImage(
-                fit: BoxFit.cover,
-                height: 170,
-                width: MediaQuery.of(context).size.width,
-                placeholder: (context, url) =>
-                const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
-                imageUrl: maintenanceTaskDetail?['task_image']
+          if(maintenanceTaskDetail?['task_image'].length != 0)
+            CarouselSlider(
+              options: CarouselOptions(
+                  height: 170,
+                  viewportFraction: 1,
+                  enableInfiniteScroll: false,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  }
+              ),
+              items : [
+                ListView.builder(itemBuilder: (context ,index){
+                  return  maintenanceTaskDetail!['task_image'][index]['image'];})].map((i){
+                return Builder(
+                    builder:(BuildContext context) {
+                      return    ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: maintenanceTaskDetail!['task_image'].length,
+                          itemBuilder: (context, index) {
+                            return  InkWell(
+                              onTap: (){
+                                print("Tap to open image");
+                                push(context: context, screen: GalleryImages(
+                                    images: maintenanceTaskDetail!['task_image'],
+                                    imgImdex:index ));
+                              },
+                              child: CachedNetworkImage(
+                                  fit: BoxFit.cover,
+                                  height: 170,
+                                  width: MediaQuery.of(context).size.width,
+                                  placeholder: (context, url) =>
+                                  const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
+                                  imageUrl: maintenanceTaskDetail!['task_image'][index]['image']
+                              ),
+                            );
+                          });});}).toList(),
+
+
             ),
 
-          maintenanceTaskDetail?['images'].length != 0 && maintenanceTaskDetail?['task_image'] == ""?
+          maintenanceTaskDetail?['images'].length != 0 && maintenanceTaskDetail?['task_image'].length == 0?
           CarouselSlider(
             options: CarouselOptions(
                 height: 170,
@@ -1102,19 +1194,27 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                         scrollDirection: Axis.horizontal,
                         itemCount: maintenanceTaskDetail!['images'].length,
                         itemBuilder: (context, index) {
-                          return  CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            height: 170,
-                            width: MediaQuery.of(context).size.width,
-                            placeholder: (context, url) =>
-                            const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
-                            imageUrl: maintenanceTaskDetail!['images'][index]['image']
+                          return  InkWell(
+                            onTap: (){
+                              print("Tap to open image");
+                              push(context: context, screen: GalleryImages(
+                                  images: maintenanceTaskDetail!['images'],
+                                  imgImdex:index ));
+                            },
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              height: 170,
+                              width: MediaQuery.of(context).size.width,
+                              placeholder: (context, url) =>
+                              const CupertinoActivityIndicator(radius: 10, color: MyColors.primaryColor,),
+                              imageUrl: maintenanceTaskDetail!['images'][index]['image']
+                            ),
                           );
                         });});}).toList(),
 
 
           ):
-          maintenanceTaskDetail?['task_image'] == "" ?
+          maintenanceTaskDetail?['task_image'].length == 0?
             Container(
             alignment: Alignment.center,
             height: 170,
@@ -1180,6 +1280,27 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                       ParagraphText('Assigned on ${DateFormat('dd-MMM-yyyy').format(DateTime.parse(maintenanceTaskDetail!['date']))}  ${maintenanceTaskDetail!['time']}',color: Colors.black,fontSize: 12,),
                     ],
                   ),
+
+                  RichText(
+                      text: TextSpan(
+                          text: 'Priority: ',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight:
+                              FontWeight.w500,
+                              fontFamily: 'Regular',
+                              fontSize: 12),
+                          children: [
+                            maintenanceTaskDetail!['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                            TextSpan(text: ''):
+                            TextSpan(
+                              text: '${maintenanceTaskDetail!['work_priority']['title']}',
+                              style: TextStyle(
+                                  color: MyColors.primaryColor,
+                                  fontFamily: 'bold',
+                                  fontSize: 12),
+                            )
+                          ])),
                 ],
               ),
             ),
@@ -1217,11 +1338,36 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(Icons.timelapse, size: 12, color: Color(0xffB49877),),
-                    hSizedBox05,
-                    ParagraphText('Started on ${(maintenanceTaskDetail?['start_date'])}',color: Colors.black,fontSize: 12,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Icon(Icons.timelapse, size: 12, color: Color(0xffB49877),),
+                        hSizedBox05,
+                        ParagraphText('Started on ${(maintenanceTaskDetail?['start_date'])}',color: Colors.black,fontSize: 12,),
+                      ],
+                    ),
+                    RichText(
+                        text: TextSpan(
+                            text: 'Priority: ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight:
+                                FontWeight.w500,
+                                fontFamily: 'Regular',
+                                fontSize: 12),
+                            children: [
+                              maintenanceTaskDetail!['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                              TextSpan(text: ''):
+                              TextSpan(
+                                text: '${maintenanceTaskDetail!['work_priority']['title']}',
+                                style: TextStyle(
+                                    color: MyColors.primaryColor,
+                                    fontFamily: 'bold',
+                                    fontSize: 12),
+                              )
+                            ])),
                   ],
                 ),
 
@@ -1423,25 +1569,52 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                                       isLoad: finish_load,
                                       loaderColor: MyColors.whiteColor,
                                       onTap: () async{
-                                      bool? result =  await showDialog(
-                                          context: context,
-                                          builder: (ctx) =>
-                                              Dialog(
-                                                  insetPadding: EdgeInsets.all(10),
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.all(
-                                                          Radius.circular(20.0))),
-                                                  child: MaintenanceCrad(task_id: widget.task_id, currentAddress: _currentAddress.toString(),)
-                                              ),
-                                        );
+                                      // bool? result =  await showDialog(
+                                      //     context: context,
+                                      //     builder: (ctx) =>
+                                      //         Dialog(
+                                      //             insetPadding: EdgeInsets.all(10),
+                                      //             shape: RoundedRectangleBorder(
+                                      //                 borderRadius: BorderRadius.all(
+                                      //                     Radius.circular(20.0))),
+                                      //             child: MaintenanceCrad(task_id: widget.task_id, currentAddress: _currentAddress.toString(),)
+                                      //         ),
+                                      //   );
+                                      //
+                                      // if(result == true) {
+                                      //   Navigator.pop(context);
+                                      //   maintenance_task_detail();
+                                      //   toast("Thank you ! Task has been finish successfully");
+                                      // }else{
+                                      //   Navigator.pop(context);
+                                      // }
 
-                                      if(result == true) {
-                                        Navigator.pop(context);
-                                        maintenance_task_detail();
-                                        toast("Thank you ! Task has been finish successfully");
-                                      }else{
-                                        Navigator.pop(context);
-                                      }
+
+                                        ///new changes not required start end date pop up to finish directly we can finish
+                                        Map<String, dynamic> request ={
+                                          'task_id' : widget.task_id,
+                                          'user_id' : userDataNotifier.value!.id ?? "",
+                                          'end_location' : _currentAddress,
+                                        };
+
+                                        setState(() {
+                                          finish_load=true;
+                                        });
+
+                                        final Response = await Webservices.postData(apiUrl: ApiUrls.maintenance_complete_task, request: request);
+                                        log("finish task api response----${Response}");
+
+
+                                        if(Response['status'].toString() == '1'){
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        }else{
+                                          toast("Something went wrong");
+                                        }
+
+                                        setState(() {
+                                          finish_load=false;
+                                        });
                                       },
 
                                     ),
@@ -1644,5 +1817,126 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
       CurvedAnimation(parent: animationController, curve:Curves.ease, ),
     );
     animationController.forward(from: 0);
+  }
+}
+
+class GalleryImages extends StatefulWidget {
+  final List? images;
+  final int imgImdex;
+
+
+  GalleryImages({Key? key, required this.images , required this.imgImdex}) : super(key: key);
+
+  @override
+  State<GalleryImages> createState() => _GalleryImagesState();
+}
+
+class _GalleryImagesState extends State<GalleryImages> {
+  PageController controller=PageController();
+  final _controller = ScrollController();
+
+  @override
+  void initState() {
+    openPicture();
+    super.initState();
+  }
+
+  openPicture(){
+    Future.delayed(Duration(microseconds: 500),(){
+      controller.jumpToPage(widget.imgImdex);
+    });
+  }
+
+  next(){
+    controller.nextPage(duration: Duration(microseconds: 200), curve: Curves.easeIn);
+  }
+
+  previous(){
+    controller.previousPage(duration: Duration(microseconds: 200), curve: Curves.easeIn);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          PhotoViewGallery.builder(
+
+            itemCount: widget.images?.length,
+            pageController: controller,
+
+            builder: (context, index){
+              final inventoryImage = widget.images?[index]['image'];
+
+              return PhotoViewGalleryPageOptions(
+
+                imageProvider: CachedNetworkImageProvider(inventoryImage),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.contained * 4,
+              );
+            },
+          ),
+          Positioned(
+            bottom: 20,
+            left: 70,
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: (){
+                    previous();
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100)
+                    ),
+                    child: Icon(CupertinoIcons.chevron_back, color: MyColors.blackColor, size: 30,),
+                  ),
+                ),
+                hSizedBox8,
+                hSizedBox8,
+                GestureDetector(
+                  onTap: (){
+                    next();
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100)
+                    ),
+                    child: Icon(CupertinoIcons.chevron_right, color: MyColors.blackColor, size: 30,),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 40,
+            right: 10,
+            child: GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 30,
+                width: 30,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(100)
+                ),
+                child: Icon(CupertinoIcons.multiply, color: MyColors.blackColor, size: 20,),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

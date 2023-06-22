@@ -246,7 +246,7 @@ class WorkCard extends StatelessWidget {
                                             ),
                                           ],
                                         ),
-                                        if (usertype == UserType.Cleaners || usertype == UserType.Maintenance )
+                                        // if (usertype == UserType.Cleaners || usertype == UserType.Maintenance )
                                           RichText(
                                               text: TextSpan(
                                                   text: 'Priority: ',
@@ -301,6 +301,8 @@ class WorkCard extends StatelessWidget {
                                             ),
                                           ],
                                         ),
+
+
                                       ],
                                     ),
                                   ),
@@ -423,24 +425,53 @@ class WorkCard extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10),
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      ListData['supervisior']==null? Container():
-                                      Icon(
-                                        Icons.person,
-                                        color: Color(0xffB49877),
-                                        size: 12,
+                                      Row(
+                                        children: [
+                                          ListData['supervisior']==null? Container():
+                                          Icon(
+                                            Icons.person,
+                                            color: Color(0xffB49877),
+                                            size: 12,
+                                          ),
+                                          hSizedBox05,
+                                          ParagraphText(
+                                            ListData['supervisior']!=null?
+                                            '${ListData['supervisior']['name']} (Supervisor)' : "",
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ],
                                       ),
-                                      hSizedBox05,
-                                      ParagraphText(
-                                        ListData['supervisior']!=null?
-                                        '${ListData['supervisior']['name']} (Supervisor)' : "",
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+
+                                      if (usertype == UserType.Logistics)
+                                        RichText(
+                                            text: TextSpan(
+                                                text: 'Priority: ',
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight:
+                                                    FontWeight.w500,
+                                                    fontFamily: 'Regular',
+                                                    fontSize: 12),
+                                                children: [
+                                                  ListData['work_priority'].runtimeType.toString() == 'List<dynamic>' ?
+                                                  TextSpan(text: ''):
+                                                  TextSpan(
+                                                    text: '${ListData['work_priority']['title']}',
+                                                    style: TextStyle(
+                                                        color: Color(0xffFFCA0D),
+                                                        fontFamily: 'Regular',
+                                                        fontSize: 12),
+                                                  )
+                                                ])),
                                     ],
                                   ),
                                 ),
+
+
                               ],
                             )),
                       ],
@@ -1007,33 +1038,33 @@ class _MaintenanceCradState extends State<MaintenanceCrad> {
                     toast('Date should not be empty');
                   } else {
 
-                        Map<String, dynamic> request ={
-                          'task_id' : widget.task_id,
-                          'user_id' : userDataNotifier.value!.id ?? "",
-                          'end_location' : widget.currentAddress,
-                          'start_date' : DateFormat("yyyy-MM-dd").format(dateStart),
-                          'end_date' : DateFormat("yyyy-MM-dd").format(dateEnd),
-                        };
-
-                        setState(() {
-                          finish_load=true;
-                        });
-
-                        final Response = await Webservices.postData(apiUrl: ApiUrls.maintenance_complete_task, request: request);
-                        log("finish task api response----${Response}");
-
-
-                        if(Response['status'].toString() == '1'){
-                          Navigator.of(context).pop(true);
-                          Navigator.pop(context);
-
-                        }else{
-                          toast("Something went wrong");
-                        }
-
-                        setState(() {
-                          finish_load=false;
-                        });
+                        // Map<String, dynamic> request ={
+                        //   'task_id' : widget.task_id,
+                        //   'user_id' : userDataNotifier.value!.id ?? "",
+                        //   'end_location' : widget.currentAddress,
+                        //   'start_date' : DateFormat("yyyy-MM-dd").format(dateStart),
+                        //   'end_date' : DateFormat("yyyy-MM-dd").format(dateEnd),
+                        // };
+                        //
+                        // setState(() {
+                        //   finish_load=true;
+                        // });
+                        //
+                        // final Response = await Webservices.postData(apiUrl: ApiUrls.maintenance_complete_task, request: request);
+                        // log("finish task api response----${Response}");
+                        //
+                        //
+                        // if(Response['status'].toString() == '1'){
+                        //   Navigator.of(context).pop(true);
+                        //   Navigator.pop(context);
+                        //
+                        // }else{
+                        //   toast("Something went wrong");
+                        // }
+                        //
+                        // setState(() {
+                        //   finish_load=false;
+                        // });
 
                   }
                 },
