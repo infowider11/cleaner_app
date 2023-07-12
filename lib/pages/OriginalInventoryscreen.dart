@@ -23,14 +23,6 @@ class _OriginalInventoryScreenState extends State<OriginalInventoryScreen>  with
 
   @override
   Widget build(BuildContext context) {
-    final List<Map> myProducts = [
-      {"id": 1, "iamge": MyImages.OriginalInventory1},
-      {"id": 2, "iamge": MyImages.OriginalInventory2},
-      {"id": 3, "iamge": MyImages.OriginalInventory3},
-      {"id": 4, "iamge": MyImages.OriginalInventory4},
-      {"id": 5, "iamge": MyImages.OriginalInventory5},
-      {"id": 6, "iamge": MyImages.OriginalInventory6},
-    ];
     return Scaffold(
       backgroundColor: MyColors.whiteColor.withOpacity(0.85),
       appBar: AppBar(
@@ -51,6 +43,13 @@ class _OriginalInventoryScreenState extends State<OriginalInventoryScreen>  with
         padding: const EdgeInsets.symmetric(horizontal:10,vertical: 10),
         child: Column(
           children: [
+            widget.image?.length == 0?
+            Container(
+              alignment: Alignment.center,
+              height: 500,
+              width: double.infinity,
+              child: Text("No Image"),
+            ):
             Expanded(
               child: GridView.builder
                 (gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -65,7 +64,7 @@ class _OriginalInventoryScreenState extends State<OriginalInventoryScreen>  with
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15)),
                       child:
-                      widget.image?.length != 0?
+
                       InkWell(
                         onTap: (){
                           // if(widget.image?[index]['id'] == "")
@@ -80,13 +79,8 @@ class _OriginalInventoryScreenState extends State<OriginalInventoryScreen>  with
                               imageUrl: "${widget.image?[index]['image']}",
                               height: 200,
                               fit: BoxFit.cover,)),
-                      )   :
-                      Container(
-                        alignment: Alignment.center,
-                        height: 500,
-                        width: double.infinity,
-                        child: Text("No Image"),
-                      ),
+                      )
+
                     );
                   }),
             ),

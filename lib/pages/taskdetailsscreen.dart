@@ -557,6 +557,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RoundEdgedButton(onTap: (){
+                    print('image list=${taskDetail!['apartment']['image']}');
                     push(context: context, screen: OriginalInventoryScreen(image: taskDetail!['apartment']['image']));
                   },text: 'ORIGINAL INVENTORY',height: 33,width: 171,verticalPadding: 0,borderRadius: 5,color: MyColors.primaryColor,),
                   RoundEdgedButton(onTap: (){
@@ -985,6 +986,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> with SingleTicker
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RoundEdgedButton(onTap: (){
+                    print('image list=${taskDetail!['apartment']['image']}');
                     push(context: context, screen: OriginalInventoryScreen(image: taskDetail!['apartment']['image']));
                   },text: 'ORIGINAL INVENTORY',height: 33,width: 171,verticalPadding: 0,borderRadius: 5,color: MyColors.primaryColor,),
                   RoundEdgedButton(onTap: (){
