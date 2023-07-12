@@ -1,5 +1,7 @@
 class ApiUrls {
-  static const baseUrl = 'https://bluediamondresearch.com/WEB01/cleaner_app/api/';
+  // static const baseUrl = 'https://bluediamondresearch.com/WEB01/cleaner_app/api/';
+  static const baseUrl = 'https://inplayaowners.com/cleaner_app/api/';
+
   static const String login = baseUrl + 'login';
   static const String forget_password = baseUrl + 'forget-password';
   static const String change_password = baseUrl + 'change-password';
